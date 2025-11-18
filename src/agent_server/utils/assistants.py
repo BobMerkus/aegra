@@ -6,9 +6,7 @@ from uuid import uuid5
 from ..constants import ASSISTANT_NAMESPACE_UUID
 
 
-def resolve_assistant_id(
-    requested_id: str, available_graphs: Mapping[str, object]
-) -> str:
+def resolve_assistant_id(requested_id: str, available_graphs: Mapping[str, object]) -> str:
     """Resolve an assistant identifier.
 
     If the provided identifier matches a known graph id, derive a
@@ -22,8 +20,4 @@ def resolve_assistant_id(
     Returns:
         A string assistant_id suitable for DB lookups and FK references.
     """
-    return (
-        str(uuid5(ASSISTANT_NAMESPACE_UUID, requested_id))
-        if requested_id in available_graphs
-        else requested_id
-    )
+    return str(uuid5(ASSISTANT_NAMESPACE_UUID, requested_id)) if requested_id in available_graphs else requested_id

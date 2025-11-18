@@ -71,9 +71,7 @@ async def health_check() -> dict[str, str]:
         checkpointer = await db_manager.get_checkpointer()
         # probe - will raise if connection is bad; tuple may not exist which is fine
         with contextlib.suppress(Exception):
-            await checkpointer.aget_tuple(
-                {"configurable": {"thread_id": "health-check"}}
-            )
+            await checkpointer.aget_tuple({"configurable": {"thread_id": "health-check"}})
         health_status["langgraph_checkpointer"] = "connected"
     except Exception as e:
         health_status["langgraph_checkpointer"] = f"error: {str(e)}"
@@ -110,9 +108,7 @@ async def readiness_check() -> dict[str, str]:
         async with db_manager.engine.begin() as conn:
             await conn.execute(text("SELECT 1"))
     except Exception as e:
-        raise HTTPException(
-            status_code=503, detail=f"Service not ready - database error: {str(e)}"
-        ) from e
+        raise HTTPException(status_code=503, detail=f"Service not ready - database error: {str(e)}") from e
 
     # Check that LangGraph components can be obtained (lazy init) and respond
     try:
@@ -120,9 +116,7 @@ async def readiness_check() -> dict[str, str]:
         store = await db_manager.get_store()
         # lightweight probes
         with contextlib.suppress(Exception):
-            await checkpointer.aget_tuple(
-                {"configurable": {"thread_id": "ready-check"}}
-            )
+            await checkpointer.aget_tuple({"configurable": {"thread_id": "ready-check"}})
         with contextlib.suppress(Exception):
             await store.aget(("ready",), "check")
     except Exception as e:

@@ -117,13 +117,9 @@ def event_store(clean_event_store_tables):
 
             loop = asyncio.get_event_loop()
             if params:
-                result = await loop.run_in_executor(
-                    None, lambda: self.sync_conn.execute(stmt, params)
-                )
+                result = await loop.run_in_executor(None, lambda: self.sync_conn.execute(stmt, params))
             else:
-                result = await loop.run_in_executor(
-                    None, lambda: self.sync_conn.execute(stmt)
-                )
+                result = await loop.run_in_executor(None, lambda: self.sync_conn.execute(stmt))
             return result
 
     with patch(

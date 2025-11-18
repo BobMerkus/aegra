@@ -49,12 +49,8 @@ class TestGetThreadState:
         thread_row.metadata_json = {"graph_id": "graph-123"}
         session.scalar.return_value = thread_row
 
-        with patch(
-            "agent_server.services.langgraph_service.get_langgraph_service"
-        ) as mock_service:
-            mock_service.return_value.get_graph = AsyncMock(
-                side_effect=Exception("boom")
-            )
+        with patch("agent_server.services.langgraph_service.get_langgraph_service") as mock_service:
+            mock_service.return_value.get_graph = AsyncMock(side_effect=Exception("boom"))
 
             with pytest.raises(HTTPException) as exc_info:
                 await get_thread_state("thread-123", user=user, session=session)
@@ -76,9 +72,7 @@ class TestGetThreadState:
         mock_agent.aget_state = AsyncMock(return_value=None)
 
         with (
-            patch(
-                "agent_server.services.langgraph_service.get_langgraph_service"
-            ) as mock_service,
+            patch("agent_server.services.langgraph_service.get_langgraph_service") as mock_service,
             patch(
                 "agent_server.services.langgraph_service.create_thread_config",
                 return_value={"configurable": {}},
@@ -106,9 +100,7 @@ class TestGetThreadState:
         mock_agent.aget_state = AsyncMock(return_value={"values": {}})
 
         with (
-            patch(
-                "agent_server.services.langgraph_service.get_langgraph_service"
-            ) as mock_service,
+            patch("agent_server.services.langgraph_service.get_langgraph_service") as mock_service,
             patch(
                 "agent_server.services.langgraph_service.create_thread_config",
                 return_value={"configurable": {}},
@@ -146,9 +138,7 @@ class TestGetThreadState:
         config = {"configurable": {}}
 
         with (
-            patch(
-                "agent_server.services.langgraph_service.get_langgraph_service"
-            ) as mock_service,
+            patch("agent_server.services.langgraph_service.get_langgraph_service") as mock_service,
             patch(
                 "agent_server.services.langgraph_service.create_thread_config",
                 return_value=config,
@@ -171,9 +161,7 @@ class TestGetThreadState:
         assert result is mock_thread_state
         assert config["configurable"]["checkpoint_ns"] == "ns-1"
         mock_agent.aget_state.assert_awaited_once_with(config, subgraphs=True)
-        mock_convert.assert_called_once_with(
-            {"values": {"foo": "bar"}}, "thread-123", subgraphs=True
-        )
+        mock_convert.assert_called_once_with({"values": {"foo": "bar"}}, "thread-123", subgraphs=True)
 
     @pytest.mark.asyncio
     async def test_http_exception_passthrough(self):
@@ -186,14 +174,10 @@ class TestGetThreadState:
 
         mock_agent = MagicMock()
         mock_agent.with_config.return_value = mock_agent
-        mock_agent.aget_state = AsyncMock(
-            side_effect=HTTPException(status_code=418, detail="teapot")
-        )
+        mock_agent.aget_state = AsyncMock(side_effect=HTTPException(status_code=418, detail="teapot"))
 
         with (
-            patch(
-                "agent_server.services.langgraph_service.get_langgraph_service"
-            ) as mock_service,
+            patch("agent_server.services.langgraph_service.get_langgraph_service") as mock_service,
             patch(
                 "agent_server.services.langgraph_service.create_thread_config",
                 return_value={"configurable": {}},

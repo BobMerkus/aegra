@@ -74,9 +74,7 @@ def _get_configurable_jsonschema(graph) -> dict:
     EXCLUDED_CONFIG_SCHEMA = {"__pregel_resuming", "__pregel_checkpoint_id"}
 
     config_schema = graph.config_schema()
-    model_fields = getattr(config_schema, "model_fields", None) or getattr(
-        config_schema, "__fields__", None
-    )
+    model_fields = getattr(config_schema, "model_fields", None) or getattr(config_schema, "__fields__", None)
 
     if model_fields is not None and "configurable" in model_fields:
         configurable = TypeAdapter(model_fields["configurable"].annotation)
@@ -84,11 +82,7 @@ def _get_configurable_jsonschema(graph) -> dict:
         if json_schema:
             for key in EXCLUDED_CONFIG_SCHEMA:
                 json_schema["properties"].pop(key, None)
-        if (
-            hasattr(graph, "config_type")
-            and graph.config_type is not None
-            and hasattr(graph.config_type, "__name__")
-        ):
+        if hasattr(graph, "config_type") and graph.config_type is not None and hasattr(graph.config_type, "__name__"):
             json_schema["title"] = graph.config_type.__name__
         return json_schema
     return {}
@@ -137,9 +131,7 @@ class AssistantService:
         self.session = session
         self.langgraph_service = langgraph_service
 
-    async def create_assistant(
-        self, request: AssistantCreate, user_identity: str
-    ) -> Assistant:
+    async def create_assistant(self, request: AssistantCreate, user_identity: str) -> Assistant:
         """Create a new assistant"""
         # Get LangGraph service to validate graph
         available_graphs = self.langgraph_service.list_graphs()
@@ -233,9 +225,7 @@ class AssistantService:
     async def list_assistants(self, user_identity: str) -> list[Assistant]:
         """List user's assistants and system assistants"""
         # Include both user's assistants and system assistants (like search_assistants does)
-        stmt = select(AssistantORM).where(
-            or_(AssistantORM.user_id == user_identity, AssistantORM.user_id == "system")
-        )
+        stmt = select(AssistantORM).where(or_(AssistantORM.user_id == user_identity, AssistantORM.user_id == "system"))
         result = await self.session.scalars(stmt)
         user_assistants = [to_pydantic(a) for a in result.all()]
         return user_assistants
@@ -247,18 +237,14 @@ class AssistantService:
     ) -> list[Assistant]:
         """Search assistants with filters"""
         # Start with user's assistants
-        stmt = select(AssistantORM).where(
-            or_(AssistantORM.user_id == user_identity, AssistantORM.user_id == "system")
-        )
+        stmt = select(AssistantORM).where(or_(AssistantORM.user_id == user_identity, AssistantORM.user_id == "system"))
 
         # Apply filters
         if request.name:
             stmt = stmt.where(AssistantORM.name.ilike(f"%{request.name}%"))
 
         if request.description:
-            stmt = stmt.where(
-                AssistantORM.description.ilike(f"%{request.description}%")
-            )
+            stmt = stmt.where(AssistantORM.description.ilike(f"%{request.description}%"))
 
         if request.graph_id:
             stmt = stmt.where(AssistantORM.graph_id == request.graph_id)
@@ -283,17 +269,13 @@ class AssistantService:
     ) -> int:
         """Count assistants with filters"""
         # Include both user's assistants and system assistants (like search_assistants does)
-        stmt = select(func.count()).where(
-            or_(AssistantORM.user_id == user_identity, AssistantORM.user_id == "system")
-        )
+        stmt = select(func.count()).where(or_(AssistantORM.user_id == user_identity, AssistantORM.user_id == "system"))
 
         if request.name:
             stmt = stmt.where(AssistantORM.name.ilike(f"%{request.name}%"))
 
         if request.description:
-            stmt = stmt.where(
-                AssistantORM.description.ilike(f"%{request.description}%")
-            )
+            stmt = stmt.where(AssistantORM.description.ilike(f"%{request.description}%"))
 
         if request.graph_id:
             stmt = stmt.where(AssistantORM.graph_id == request.graph_id)
@@ -308,9 +290,7 @@ class AssistantService:
         """Get assistant by ID"""
         stmt = select(AssistantORM).where(
             AssistantORM.assistant_id == assistant_id,
-            or_(
-                AssistantORM.user_id == user_identity, AssistantORM.user_id == "system"
-            ),
+            or_(AssistantORM.user_id == user_identity, AssistantORM.user_id == "system"),
         )
         assistant = await self.session.scalar(stmt)
 
@@ -319,9 +299,7 @@ class AssistantService:
 
         return to_pydantic(assistant)
 
-    async def update_assistant(
-        self, assistant_id: str, request: AssistantUpdate, user_identity: str
-    ) -> Assistant:
+    async def update_assistant(self, assistant_id: str, request: AssistantUpdate, user_identity: str) -> Assistant:
         """Update assistant by ID"""
         metadata = request.metadata or {}
         config = request.config or {}
@@ -407,9 +385,7 @@ class AssistantService:
 
         return {"status": "deleted"}
 
-    async def set_assistant_latest(
-        self, assistant_id: str, version: int, user_identity: str
-    ) -> Assistant:
+    async def set_assistant_latest(self, assistant_id: str, version: int, user_identity: str) -> Assistant:
         """Set the given version as the latest version of an assistant"""
         stmt = select(AssistantORM).where(
             AssistantORM.assistant_id == assistant_id,
@@ -425,9 +401,7 @@ class AssistantService:
         )
         assistant_version = await self.session.scalar(version_stmt)
         if not assistant_version:
-            raise HTTPException(
-                404, f"Version '{version}' for Assistant '{assistant_id}' not found"
-            )
+            raise HTTPException(404, f"Version '{version}' for Assistant '{assistant_id}' not found")
 
         assistant_update = (
             update(AssistantORM)
@@ -450,15 +424,11 @@ class AssistantService:
         updated_assistant = await self.session.scalar(stmt)
         return to_pydantic(updated_assistant)
 
-    async def list_assistant_versions(
-        self, assistant_id: str, user_identity: str
-    ) -> list[Assistant]:
+    async def list_assistant_versions(self, assistant_id: str, user_identity: str) -> list[Assistant]:
         """List all versions of an assistant"""
         stmt = select(AssistantORM).where(
             AssistantORM.assistant_id == assistant_id,
-            or_(
-                AssistantORM.user_id == user_identity, AssistantORM.user_id == "system"
-            ),
+            or_(AssistantORM.user_id == user_identity, AssistantORM.user_id == "system"),
         )
         assistant = await self.session.scalar(stmt)
         if not assistant:
@@ -473,9 +443,7 @@ class AssistantService:
         versions = result.all()
 
         if not versions:
-            raise HTTPException(
-                404, f"No versions found for Assistant '{assistant_id}'"
-            )
+            raise HTTPException(404, f"No versions found for Assistant '{assistant_id}'")
 
         # Convert to Pydantic models
         version_list = [
@@ -497,15 +465,11 @@ class AssistantService:
 
         return version_list
 
-    async def get_assistant_schemas(
-        self, assistant_id: str, user_identity: str
-    ) -> dict:
+    async def get_assistant_schemas(self, assistant_id: str, user_identity: str) -> dict:
         """Get input, output, state, config and context schemas for an assistant"""
         stmt = select(AssistantORM).where(
             AssistantORM.assistant_id == assistant_id,
-            or_(
-                AssistantORM.user_id == user_identity, AssistantORM.user_id == "system"
-            ),
+            or_(AssistantORM.user_id == user_identity, AssistantORM.user_id == "system"),
         )
         assistant = await self.session.scalar(stmt)
 
@@ -521,15 +485,11 @@ class AssistantService:
         except Exception as e:
             raise HTTPException(400, f"Failed to extract schemas: {str(e)}") from e
 
-    async def get_assistant_graph(
-        self, assistant_id: str, xray: bool | int, user_identity: str
-    ) -> dict:
+    async def get_assistant_graph(self, assistant_id: str, xray: bool | int, user_identity: str) -> dict:
         """Get the graph structure for visualization"""
         stmt = select(AssistantORM).where(
             AssistantORM.assistant_id == assistant_id,
-            or_(
-                AssistantORM.user_id == user_identity, AssistantORM.user_id == "system"
-            ),
+            or_(AssistantORM.user_id == user_identity, AssistantORM.user_id == "system"),
         )
         assistant = await self.session.scalar(stmt)
 
@@ -553,9 +513,7 @@ class AssistantService:
 
                 return json_graph
             except NotImplementedError as e:
-                raise HTTPException(
-                    422, detail="The graph does not support visualization"
-                ) from e
+                raise HTTPException(422, detail="The graph does not support visualization") from e
 
         except HTTPException:
             raise
@@ -572,9 +530,7 @@ class AssistantService:
         """Get subgraphs of an assistant"""
         stmt = select(AssistantORM).where(
             AssistantORM.assistant_id == assistant_id,
-            or_(
-                AssistantORM.user_id == user_identity, AssistantORM.user_id == "system"
-            ),
+            or_(AssistantORM.user_id == user_identity, AssistantORM.user_id == "system"),
         )
         assistant = await self.session.scalar(stmt)
 
@@ -587,15 +543,11 @@ class AssistantService:
             try:
                 subgraphs = {
                     ns: _extract_graph_schemas(subgraph)
-                    async for ns, subgraph in graph.aget_subgraphs(
-                        namespace=namespace, recurse=recurse
-                    )
+                    async for ns, subgraph in graph.aget_subgraphs(namespace=namespace, recurse=recurse)
                 }
                 return subgraphs
             except NotImplementedError as e:
-                raise HTTPException(
-                    422, detail="The graph does not support subgraphs"
-                ) from e
+                raise HTTPException(422, detail="The graph does not support subgraphs") from e
 
         except HTTPException:
             raise

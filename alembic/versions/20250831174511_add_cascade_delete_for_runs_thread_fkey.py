@@ -39,6 +39,4 @@ def downgrade() -> None:
     op.drop_constraint("runs_thread_id_fkey", "runs", type_="foreignkey")
 
     # Recreate the original foreign key constraint without CASCADE
-    op.create_foreign_key(
-        "runs_thread_id_fkey", "runs", "thread", ["thread_id"], ["thread_id"]
-    )
+    op.create_foreign_key("runs_thread_id_fkey", "runs", "thread", ["thread_id"], ["thread_id"])

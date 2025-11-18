@@ -10,9 +10,7 @@ from tests.fixtures.session_fixtures import BasicSession, override_session_depen
 from tests.fixtures.test_helpers import DummyRun, DummyThread
 
 
-def _thread_row(
-    thread_id="test-thread-123", status="idle", metadata=None, user_id="test-user"
-):
+def _thread_row(thread_id="test-thread-123", status="idle", metadata=None, user_id="test-user"):
     """Create a mock thread ORM object"""
     thread = DummyThread(thread_id, status, metadata, user_id)
 
@@ -244,15 +242,9 @@ class TestSearchThreads:
         app = create_test_app(include_runs=False, include_threads=True)
 
         threads = [
-            _thread_row(
-                "thread-1", status="idle", metadata={"env": "prod", "team": "alpha"}
-            ),
-            _thread_row(
-                "thread-2", status="busy", metadata={"env": "dev", "team": "beta"}
-            ),
-            _thread_row(
-                "thread-3", status="idle", metadata={"env": "prod", "team": "beta"}
-            ),
+            _thread_row("thread-1", status="idle", metadata={"env": "prod", "team": "alpha"}),
+            _thread_row("thread-2", status="busy", metadata={"env": "dev", "team": "beta"}),
+            _thread_row("thread-3", status="idle", metadata={"env": "prod", "team": "beta"}),
         ]
 
         from tests.fixtures.session_fixtures import ThreadSession

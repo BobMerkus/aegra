@@ -34,9 +34,7 @@ class LangfuseProvider(ObservabilityProvider):
 
         return callbacks
 
-    def get_metadata(
-        self, run_id: str, thread_id: str, user_identity: str | None = None
-    ) -> dict[str, Any]:
+    def get_metadata(self, run_id: str, thread_id: str, user_identity: str | None = None) -> dict[str, Any]:
         """Return Langfuse-specific metadata."""
         metadata: dict[str, Any] = {
             "langfuse_session_id": thread_id,

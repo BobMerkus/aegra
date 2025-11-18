@@ -56,9 +56,7 @@ class TestLangGraphServiceConfig:
         with (
             patch("pathlib.Path.exists", return_value=True),
             patch("pathlib.Path.open", mock_open(read_data=json.dumps(config_data))),
-            patch(
-                "agent_server.services.langgraph_service.LangGraphService._ensure_default_assistants"
-            ),
+            patch("agent_server.services.langgraph_service.LangGraphService._ensure_default_assistants"),
         ):
             service = LangGraphService()
             await service.initialize()
@@ -74,9 +72,7 @@ class TestLangGraphServiceConfig:
         with (
             patch("pathlib.Path.exists", return_value=True),
             patch("pathlib.Path.open", mock_open(read_data=json.dumps(config_data))),
-            patch(
-                "agent_server.services.langgraph_service.LangGraphService._ensure_default_assistants"
-            ),
+            patch("agent_server.services.langgraph_service.LangGraphService._ensure_default_assistants"),
         ):
             service = LangGraphService("explicit.json")
             await service.initialize()
@@ -95,9 +91,7 @@ class TestLangGraphServiceConfig:
         with (
             patch("pathlib.Path.exists", return_value=True),
             patch("pathlib.Path.open", mock_open(read_data=json.dumps(config_data))),
-            patch(
-                "agent_server.services.langgraph_service.LangGraphService._ensure_default_assistants"
-            ),
+            patch("agent_server.services.langgraph_service.LangGraphService._ensure_default_assistants"),
         ):
             service = LangGraphService()
             await service.initialize()
@@ -116,9 +110,7 @@ class TestLangGraphServiceConfig:
         with (
             patch("pathlib.Path.exists", return_value=True),
             patch("pathlib.Path.open", mock_open(read_data=json.dumps(config_data))),
-            patch(
-                "agent_server.services.langgraph_service.LangGraphService._ensure_default_assistants"
-            ),
+            patch("agent_server.services.langgraph_service.LangGraphService._ensure_default_assistants"),
         ):
             service = LangGraphService()
             await service.initialize()
@@ -194,9 +186,7 @@ class TestLangGraphServiceGraphs:
     async def test_get_graph_success(self):
         """Test successful graph retrieval"""
         service = LangGraphService()
-        service._graph_registry = {
-            "test_graph": {"file_path": "test.py", "export_name": "graph"}
-        }
+        service._graph_registry = {"test_graph": {"file_path": "test.py", "export_name": "graph"}}
         # Create a DummyStateGraph subclass so isinstance check uses compile path
         import agent_server.services.langgraph_service as lgs_module
 
@@ -208,9 +198,7 @@ class TestLangGraphServiceGraphs:
         mock_compiled_graph = Mock()
 
         with (
-            patch.object(
-                service, "_load_graph_from_file", return_value=mock_graph
-            ) as mock_load,
+            patch.object(service, "_load_graph_from_file", return_value=mock_graph) as mock_load,
             patch("agent_server.core.database.db_manager") as mock_db_manager,
         ):
             # Mock database manager
@@ -223,12 +211,8 @@ class TestLangGraphServiceGraphs:
             result = await service.get_graph("test_graph")
 
             assert result == mock_compiled_graph
-            mock_load.assert_called_once_with(
-                "test_graph", service._graph_registry["test_graph"]
-            )
-            mock_graph.compile.assert_called_once_with(
-                checkpointer="checkpointer", store="store"
-            )
+            mock_load.assert_called_once_with("test_graph", service._graph_registry["test_graph"])
+            mock_graph.compile.assert_called_once_with(checkpointer="checkpointer", store="store")
 
     @pytest.mark.asyncio
     async def test_get_graph_not_found(self):
@@ -243,9 +227,7 @@ class TestLangGraphServiceGraphs:
     async def test_get_graph_cached(self):
         """Test returning cached graph"""
         service = LangGraphService()
-        service._graph_registry = {
-            "test_graph": {"file_path": "test.py", "export_name": "graph"}
-        }
+        service._graph_registry = {"test_graph": {"file_path": "test.py", "export_name": "graph"}}
 
         cached_graph = Mock()
         service._graph_cache = {"test_graph": cached_graph}
@@ -258,18 +240,14 @@ class TestLangGraphServiceGraphs:
     async def test_get_graph_force_reload(self):
         """Test force reload bypasses cache"""
         service = LangGraphService()
-        service._graph_registry = {
-            "test_graph": {"file_path": "test.py", "export_name": "graph"}
-        }
+        service._graph_registry = {"test_graph": {"file_path": "test.py", "export_name": "graph"}}
 
         cached_graph = Mock()
         new_graph = Mock()
         service._graph_cache = {"test_graph": cached_graph}
 
         with (
-            patch.object(
-                service, "_load_graph_from_file", return_value=new_graph
-            ) as mock_load,
+            patch.object(service, "_load_graph_from_file", return_value=new_graph) as mock_load,
             patch("agent_server.core.database.db_manager") as mock_db_manager,
         ):
             mock_db_manager.get_checkpointer = AsyncMock(return_value="checkpointer")
@@ -572,9 +550,7 @@ class TestLangGraphServiceConfigs:
             "agent_server.services.langgraph_service.get_tracing_callbacks",
             return_value=[],
         ):
-            result = create_run_config(
-                run_id, thread_id, mock_user, checkpoint=checkpoint
-            )
+            result = create_run_config(run_id, thread_id, mock_user, checkpoint=checkpoint)
 
         assert result["configurable"]["checkpoint_key"] == "checkpoint_value"
 

@@ -184,9 +184,7 @@ async def test_runs_wait_stateful_e2e():
             f"/threads/{thread_id}/runs/wait",
             json={
                 "assistant_id": assistant_id,
-                "input": {
-                    "messages": [{"role": "user", "content": "Say hello in one word."}]
-                },
+                "input": {"messages": [{"role": "user", "content": "Say hello in one word."}]},
             },
         )
         elog(

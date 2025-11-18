@@ -20,9 +20,7 @@ class DatabaseManager:
         self._checkpointer_cm: Any = None  # holds the contextmanager so we can close it
         self._store: AsyncPostgresStore | None = None
         self._store_cm: Any = None
-        self._database_url = os.getenv(
-            "DATABASE_URL", "postgresql+asyncpg://user:password@localhost:5432/aegra"
-        )
+        self._database_url = os.getenv("DATABASE_URL", "postgresql+asyncpg://user:password@localhost:5432/aegra")
 
     async def initialize(self) -> None:
         """Initialize database connections and LangGraph components"""
@@ -77,9 +75,7 @@ class DatabaseManager:
         if not hasattr(self, "_langgraph_dsn"):
             raise RuntimeError("Database not initialized")
         if self._checkpointer is None:
-            self._checkpointer_cm = AsyncPostgresSaver.from_conn_string(
-                self._langgraph_dsn
-            )
+            self._checkpointer_cm = AsyncPostgresSaver.from_conn_string(self._langgraph_dsn)
             self._checkpointer = await self._checkpointer_cm.__aenter__()
             # Ensure required tables exist (idempotent)
             await self._checkpointer.setup()

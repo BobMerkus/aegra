@@ -105,9 +105,7 @@ app.add_middleware(
 app.add_middleware(DoubleEncodedJSONMiddleware)
 
 # Add authentication middleware (must be added after CORS)
-app.add_middleware(
-    AuthenticationMiddleware, backend=get_auth_backend(), on_error=on_auth_error
-)
+app.add_middleware(AuthenticationMiddleware, backend=get_auth_backend(), on_error=on_auth_error)
 
 # Include routers
 app.include_router(health_router, prefix="", tags=["Health"])
@@ -119,9 +117,7 @@ app.include_router(store_router, prefix="", tags=["Store"])
 
 # Error handling
 @app.exception_handler(HTTPException)
-async def agent_protocol_exception_handler(
-    _request: Request, exc: HTTPException
-) -> JSONResponse:
+async def agent_protocol_exception_handler(_request: Request, exc: HTTPException) -> JSONResponse:
     """Convert HTTP exceptions to Agent Protocol error format"""
     return JSONResponse(
         status_code=exc.status_code,

@@ -35,27 +35,17 @@ class Assistant(Base):
     __tablename__ = "assistant"
 
     # TEXT PK with DB-side generation using uuid_generate_v4()::text
-    assistant_id: Mapped[str] = mapped_column(
-        Text, primary_key=True, server_default=text("uuid_generate_v4()::text")
-    )
+    assistant_id: Mapped[str] = mapped_column(Text, primary_key=True, server_default=text("uuid_generate_v4()::text"))
     name: Mapped[str] = mapped_column(Text, nullable=False)
     description: Mapped[str | None] = mapped_column(Text)
     graph_id: Mapped[str] = mapped_column(Text, nullable=False)
     config: Mapped[dict] = mapped_column(JSONB, server_default=text("'{}'::jsonb"))
     context: Mapped[dict] = mapped_column(JSONB, server_default=text("'{}'::jsonb"))
     user_id: Mapped[str] = mapped_column(Text, nullable=False)
-    version: Mapped[int] = mapped_column(
-        Integer, nullable=False, server_default=text("1")
-    )
-    metadata_dict: Mapped[dict] = mapped_column(
-        JSONB, server_default=text("'{}'::jsonb"), name="metadata"
-    )
-    created_at: Mapped[datetime] = mapped_column(
-        TIMESTAMP(timezone=True), server_default=text("now()")
-    )
-    updated_at: Mapped[datetime] = mapped_column(
-        TIMESTAMP(timezone=True), server_default=text("now()")
-    )
+    version: Mapped[int] = mapped_column(Integer, nullable=False, server_default=text("1"))
+    metadata_dict: Mapped[dict] = mapped_column(JSONB, server_default=text("'{}'::jsonb"), name="metadata")
+    created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), server_default=text("now()"))
+    updated_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), server_default=text("now()"))
 
     # Indexes for performance
     __table_args__ = (
@@ -81,12 +71,8 @@ class AssistantVersion(Base):
     graph_id: Mapped[str] = mapped_column(Text, nullable=False)
     config: Mapped[dict | None] = mapped_column(JSONB)
     context: Mapped[dict | None] = mapped_column(JSONB)
-    created_at: Mapped[datetime] = mapped_column(
-        TIMESTAMP(timezone=True), server_default=text("now()")
-    )
-    metadata_dict: Mapped[dict] = mapped_column(
-        JSONB, server_default=text("'{}'::jsonb"), name="metadata"
-    )
+    created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), server_default=text("now()"))
+    metadata_dict: Mapped[dict] = mapped_column(JSONB, server_default=text("'{}'::jsonb"), name="metadata")
     name: Mapped[str | None] = mapped_column(Text)
     description: Mapped[str | None] = mapped_column(Text)
 
@@ -97,16 +83,10 @@ class Thread(Base):
     thread_id: Mapped[str] = mapped_column(Text, primary_key=True)
     status: Mapped[str] = mapped_column(Text, server_default=text("'idle'"))
     # Database column is 'metadata_json' (per database.py). ORM attribute 'metadata_json' must map to that column.
-    metadata_json: Mapped[dict] = mapped_column(
-        "metadata_json", JSONB, server_default=text("'{}'::jsonb")
-    )
+    metadata_json: Mapped[dict] = mapped_column("metadata_json", JSONB, server_default=text("'{}'::jsonb"))
     user_id: Mapped[str] = mapped_column(Text, nullable=False)
-    created_at: Mapped[datetime] = mapped_column(
-        TIMESTAMP(timezone=True), server_default=text("now()")
-    )
-    updated_at: Mapped[datetime] = mapped_column(
-        TIMESTAMP(timezone=True), server_default=text("now()")
-    )
+    created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), server_default=text("now()"))
+    updated_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), server_default=text("now()"))
 
     # Indexes for performance
     __table_args__ = (Index("idx_thread_user", "user_id"),)
@@ -116,19 +96,11 @@ class Run(Base):
     __tablename__ = "runs"
 
     # TEXT PK with DB-side generation using uuid_generate_v4()::text
-    run_id: Mapped[str] = mapped_column(
-        Text, primary_key=True, server_default=text("uuid_generate_v4()::text")
-    )
-    thread_id: Mapped[str] = mapped_column(
-        Text, ForeignKey("thread.thread_id", ondelete="CASCADE"), nullable=False
-    )
-    assistant_id: Mapped[str | None] = mapped_column(
-        Text, ForeignKey("assistant.assistant_id", ondelete="CASCADE")
-    )
+    run_id: Mapped[str] = mapped_column(Text, primary_key=True, server_default=text("uuid_generate_v4()::text"))
+    thread_id: Mapped[str] = mapped_column(Text, ForeignKey("thread.thread_id", ondelete="CASCADE"), nullable=False)
+    assistant_id: Mapped[str | None] = mapped_column(Text, ForeignKey("assistant.assistant_id", ondelete="CASCADE"))
     status: Mapped[str] = mapped_column(Text, server_default=text("'pending'"))
-    input: Mapped[dict | None] = mapped_column(
-        JSONB, server_default=text("'{}'::jsonb")
-    )
+    input: Mapped[dict | None] = mapped_column(JSONB, server_default=text("'{}'::jsonb"))
     # Some environments may not yet have a 'config' column; make it nullable without default to match existing DB.
     # If migrations add this column later, it's already represented here.
     config: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
@@ -136,12 +108,8 @@ class Run(Base):
     output: Mapped[dict | None] = mapped_column(JSONB)
     error_message: Mapped[str | None] = mapped_column(Text)
     user_id: Mapped[str] = mapped_column(Text, nullable=False)
-    created_at: Mapped[datetime] = mapped_column(
-        TIMESTAMP(timezone=True), server_default=text("now()")
-    )
-    updated_at: Mapped[datetime] = mapped_column(
-        TIMESTAMP(timezone=True), server_default=text("now()")
-    )
+    created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), server_default=text("now()"))
+    updated_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), server_default=text("now()"))
 
     # Indexes for performance
     __table_args__ = (
@@ -161,9 +129,7 @@ class RunEvent(Base):
     seq: Mapped[int] = mapped_column(Integer, nullable=False)
     event: Mapped[str] = mapped_column(Text, nullable=False)
     data: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
-    created_at: Mapped[datetime] = mapped_column(
-        TIMESTAMP(timezone=True), server_default=text("now()")
-    )
+    created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), server_default=text("now()"))
 
     # Indexes for performance
     __table_args__ = (

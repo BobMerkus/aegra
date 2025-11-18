@@ -31,9 +31,7 @@ async def test_lifespan_registers_langfuse_provider(monkeypatch):
     # Mock all the dependencies that lifespan needs
     with (
         patch("src.agent_server.main.db_manager") as mock_db_manager,
-        patch(
-            "src.agent_server.main.get_langgraph_service"
-        ) as mock_get_langgraph_service,
+        patch("src.agent_server.main.get_langgraph_service") as mock_get_langgraph_service,
         patch("src.agent_server.main.event_store") as mock_event_store,
     ):
         # Setup mocks
@@ -58,12 +56,8 @@ async def test_lifespan_registers_langfuse_provider(monkeypatch):
         async with lifespan(mock_app):
             # Verify that a LangfuseProvider instance is registered
             # Check by type since reloading creates a new instance
-            langfuse_providers = [
-                p for p in manager._providers if isinstance(p, LangfuseProvider)
-            ]
-            assert len(langfuse_providers) == 1, (
-                "Langfuse provider should be registered during lifespan startup"
-            )
+            langfuse_providers = [p for p in manager._providers if isinstance(p, LangfuseProvider)]
+            assert len(langfuse_providers) == 1, "Langfuse provider should be registered during lifespan startup"
 
             # Verify the observability manager can get callbacks from registered provider
             callbacks = manager.get_all_callbacks()
@@ -83,13 +77,9 @@ async def test_lifespan_calls_required_initialization():
 
     with (
         patch("src.agent_server.main.db_manager") as mock_db_manager,
-        patch(
-            "src.agent_server.main.get_langgraph_service"
-        ) as mock_get_langgraph_service,
+        patch("src.agent_server.main.get_langgraph_service") as mock_get_langgraph_service,
         patch("src.agent_server.main.event_store") as mock_event_store,
-        patch(
-            "src.agent_server.main.get_observability_manager"
-        ) as mock_get_observability_manager,
+        patch("src.agent_server.main.get_observability_manager") as mock_get_observability_manager,
     ):
         # Setup mocks
         mock_db_manager.initialize = AsyncMock()
@@ -119,9 +109,7 @@ async def test_lifespan_calls_required_initialization():
         # Verify observability manager was used to register provider
         mock_get_observability_manager.assert_called()
         # Check that register_provider was called with a LangfuseProvider instance
-        assert mock_manager.register_provider.called, (
-            "register_provider should be called"
-        )
+        assert mock_manager.register_provider.called, "register_provider should be called"
         call_args = mock_manager.register_provider.call_args
         assert call_args is not None
         # Verify it was called with a LangfuseProvider (check by type/class name)

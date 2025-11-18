@@ -100,16 +100,10 @@ async def create_thread(
                 return dict(val.items())  # type: ignore[attr-defined]
         return default
 
-    coerced_thread_id = _coerce_str(
-        getattr(thread_orm, "thread_id", thread_id), thread_id
-    )
+    coerced_thread_id = _coerce_str(getattr(thread_orm, "thread_id", thread_id), thread_id)
     coerced_status = _coerce_str(getattr(thread_orm, "status", "idle"), "idle")
-    coerced_user_id = _coerce_str(
-        getattr(thread_orm, "user_id", user.identity), user.identity
-    )
-    coerced_metadata = _coerce_dict(
-        getattr(thread_orm, "metadata_json", metadata), metadata
-    )
+    coerced_user_id = _coerce_str(getattr(thread_orm, "user_id", user.identity), user.identity)
+    coerced_metadata = _coerce_dict(getattr(thread_orm, "metadata_json", metadata), metadata)
     coerced_created_at = getattr(thread_orm, "created_at", None)
     if not isinstance(coerced_created_at, datetime):
         coerced_created_at = datetime.now(UTC)
@@ -126,9 +120,7 @@ async def create_thread(
 
 
 @router.get("/threads", response_model=ThreadList)
-async def list_threads(
-    user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)
-):
+async def list_threads(user: User = Depends(get_current_user), session: AsyncSession = Depends(get_session)):
     """List user's threads"""
     stmt = select(ThreadORM).where(ThreadORM.user_id == user.identity)
     result = await session.scalars(stmt)
@@ -152,9 +144,7 @@ async def get_thread(
     session: AsyncSession = Depends(get_session),
 ):
     """Get thread by ID"""
-    stmt = select(ThreadORM).where(
-        ThreadORM.thread_id == thread_id, ThreadORM.user_id == user.identity
-    )
+    stmt = select(ThreadORM).where(ThreadORM.thread_id == thread_id, ThreadORM.user_id == user.identity)
     thread = await session.scalar(stmt)
     if not thread:
         raise HTTPException(404, f"Thread '{thread_id}' not found")
@@ -171,17 +161,13 @@ async def get_thread(
 async def get_thread_state(
     thread_id: str,
     subgraphs: bool = Query(False, description="Include states from subgraphs"),
-    checkpoint_ns: str | None = Query(
-        None, description="Checkpoint namespace to scope lookup"
-    ),
+    checkpoint_ns: str | None = Query(None, description="Checkpoint namespace to scope lookup"),
     user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ):
     """Get state for a thread (i.e. latest checkpoint)"""
     try:
-        stmt = select(ThreadORM).where(
-            ThreadORM.thread_id == thread_id, ThreadORM.user_id == user.identity
-        )
+        stmt = select(ThreadORM).where(ThreadORM.thread_id == thread_id, ThreadORM.user_id == user.identity)
         thread = await session.scalar(stmt)
         if not thread:
             raise HTTPException(404, f"Thread '{thread_id}' not found")
@@ -202,9 +188,7 @@ async def get_thread_state(
             agent = await langgraph_service.get_graph(graph_id)
         except Exception as e:
             logger.exception("Failed to load graph '%s' for state retrieval", graph_id)
-            raise HTTPException(
-                500, f"Failed to load graph '{graph_id}': {str(e)}"
-            ) from e
+            raise HTTPException(500, f"Failed to load graph '{graph_id}': {str(e)}") from e
 
         config: dict[str, Any] = create_thread_config(thread_id, user, {})
         if checkpoint_ns:
@@ -218,12 +202,8 @@ async def get_thread_state(
         except HTTPException:
             raise
         except Exception as e:
-            logger.exception(
-                "Failed to retrieve latest state for thread '%s'", thread_id
-            )
-            raise HTTPException(
-                500, f"Failed to retrieve thread state: {str(e)}"
-            ) from e
+            logger.exception("Failed to retrieve latest state for thread '%s'", thread_id)
+            raise HTTPException(500, f"Failed to retrieve thread state: {str(e)}") from e
 
         if not state_snapshot:
             logger.info(
@@ -238,9 +218,7 @@ async def get_thread_state(
                 state_snapshot, thread_id, subgraphs=subgraphs
             )
         except Exception as e:
-            logger.exception(
-                "Failed to convert latest state for thread '%s'", thread_id
-            )
+            logger.exception("Failed to convert latest state for thread '%s'", thread_id)
             raise HTTPException(500, f"Failed to convert thread state: {str(e)}") from e
 
         logger.debug(
@@ -256,9 +234,7 @@ async def get_thread_state(
     except HTTPException:
         raise
     except Exception as e:
-        logger.exception(
-            "Unexpected error retrieving latest state for thread '%s'", thread_id
-        )
+        logger.exception("Unexpected error retrieving latest state for thread '%s'", thread_id)
         raise HTTPException(500, f"Error retrieving thread state: {str(e)}") from e
 
 
@@ -267,18 +243,14 @@ async def get_thread_state_at_checkpoint(
     thread_id: str,
     checkpoint_id: str,
     subgraphs: bool | None = Query(False, description="Include states from subgraphs"),
-    checkpoint_ns: str | None = Query(
-        None, description="Checkpoint namespace to scope lookup"
-    ),
+    checkpoint_ns: str | None = Query(None, description="Checkpoint namespace to scope lookup"),
     user: User = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ):
     """Get thread state at a specific checkpoint"""
     try:
         # Verify the thread exists and belongs to the user
-        stmt = select(ThreadORM).where(
-            ThreadORM.thread_id == thread_id, ThreadORM.user_id == user.identity
-        )
+        stmt = select(ThreadORM).where(ThreadORM.thread_id == thread_id, ThreadORM.user_id == user.identity)
         thread = await session.scalar(stmt)
         if not thread:
             raise HTTPException(404, f"Thread '{thread_id}' not found")
@@ -299,12 +271,8 @@ async def get_thread_state_at_checkpoint(
         try:
             agent = await langgraph_service.get_graph(graph_id)
         except Exception as e:
-            logger.exception(
-                "Failed to load graph '%s' for checkpoint retrieval", graph_id
-            )
-            raise HTTPException(
-                500, f"Failed to load graph '{graph_id}': {str(e)}"
-            ) from e
+            logger.exception("Failed to load graph '%s' for checkpoint retrieval", graph_id)
+            raise HTTPException(500, f"Failed to load graph '{graph_id}': {str(e)}") from e
 
         # Build config with user context and thread_id
         config: dict[str, Any] = create_thread_config(thread_id, user, {})
@@ -315,9 +283,7 @@ async def get_thread_state_at_checkpoint(
         # Fetch state at checkpoint
         try:
             agent = agent.with_config(config)
-            state_snapshot = await agent.aget_state(
-                config, subgraphs=subgraphs or False
-            )
+            state_snapshot = await agent.aget_state(config, subgraphs=subgraphs or False)
         except Exception as e:
             logger.exception(
                 "Failed to retrieve state at checkpoint '%s' for thread '%s'",
@@ -347,12 +313,8 @@ async def get_thread_state_at_checkpoint(
     except HTTPException:
         raise
     except Exception as e:
-        logger.exception(
-            "Error retrieving checkpoint '%s' for thread '%s'", checkpoint_id, thread_id
-        )
-        raise HTTPException(
-            500, f"Error retrieving checkpoint '{checkpoint_id}': {str(e)}"
-        ) from e
+        logger.exception("Error retrieving checkpoint '%s' for thread '%s'", checkpoint_id, thread_id)
+        raise HTTPException(500, f"Error retrieving checkpoint '{checkpoint_id}': {str(e)}") from e
 
 
 @router.post("/threads/{thread_id}/state/checkpoint", response_model=ThreadState)
@@ -371,9 +333,7 @@ async def get_thread_state_at_checkpoint_post(
     """
     checkpoint = request.checkpoint
     if not checkpoint.checkpoint_id:
-        raise HTTPException(
-            400, "checkpoint_id is required in checkpoint configuration"
-        )
+        raise HTTPException(400, "checkpoint_id is required in checkpoint configuration")
 
     subgraphs = request.subgraphs
     checkpoint_ns = checkpoint.checkpoint_ns if checkpoint.checkpoint_ns else None
@@ -403,9 +363,7 @@ async def get_thread_history_post(
         # Validate and coerce inputs
         limit = request.limit or 10
         if not isinstance(limit, int) or limit < 1 or limit > 1000:
-            raise HTTPException(
-                422, "Invalid limit; must be an integer between 1 and 1000"
-            )
+            raise HTTPException(422, "Invalid limit; must be an integer between 1 and 1000")
 
         before = request.before
         if before is not None and not isinstance(before, str):
@@ -420,9 +378,7 @@ async def get_thread_history_post(
 
         checkpoint = request.checkpoint or {}
         if not isinstance(checkpoint, dict):
-            raise HTTPException(
-                422, "Invalid 'checkpoint' parameter; must be an object"
-            )
+            raise HTTPException(422, "Invalid 'checkpoint' parameter; must be an object")
 
         # Optional flags
         subgraphs = bool(request.subgraphs) if request.subgraphs is not None else False
@@ -435,9 +391,7 @@ async def get_thread_history_post(
         )
 
         # Verify the thread exists and belongs to the user
-        stmt = select(ThreadORM).where(
-            ThreadORM.thread_id == thread_id, ThreadORM.user_id == user.identity
-        )
+        stmt = select(ThreadORM).where(ThreadORM.thread_id == thread_id, ThreadORM.user_id == user.identity)
         thread = await session.scalar(stmt)
         if not thread:
             raise HTTPException(404, f"Thread '{thread_id}' not found")
@@ -461,9 +415,7 @@ async def get_thread_history_post(
             agent = await langgraph_service.get_graph(graph_id)
         except Exception as e:
             logger.exception("Failed to load graph '%s' for history", graph_id)
-            raise HTTPException(
-                500, f"Failed to load graph '{graph_id}': {str(e)}"
-            ) from e
+            raise HTTPException(500, f"Failed to load graph '{graph_id}': {str(e)}") from e
 
         # Build config with user context and thread_id
         config: dict[str, Any] = create_thread_config(thread_id, user, {})
@@ -488,9 +440,7 @@ async def get_thread_history_post(
 
         # Some LangGraph versions support subgraphs flag; pass if available
         try:
-            async for snapshot in agent.aget_state_history(
-                config, subgraphs=subgraphs, **kwargs
-            ):
+            async for snapshot in agent.aget_state_history(config, subgraphs=subgraphs, **kwargs):
                 state_snapshots.append(snapshot)
         except TypeError:
             # Fallback if subgraphs not supported in this version
@@ -498,9 +448,7 @@ async def get_thread_history_post(
                 state_snapshots.append(snapshot)
 
         # Convert snapshots to ThreadState using service
-        thread_states = thread_state_service.convert_snapshots_to_thread_states(
-            state_snapshots, thread_id
-        )
+        thread_states = thread_state_service.convert_snapshots_to_thread_states(state_snapshots, thread_id)
 
         return thread_states
 
@@ -519,9 +467,7 @@ async def get_thread_history_post(
 async def get_thread_history_get(
     thread_id: str,
     limit: int = Query(10, ge=1, le=1000, description="Number of states to return"),
-    before: str | None = Query(
-        None, description="Return states before this checkpoint ID"
-    ),
+    before: str | None = Query(None, description="Return states before this checkpoint ID"),
     subgraphs: bool | None = Query(False, description="Include states from subgraphs"),
     checkpoint_ns: str | None = Query(None, description="Checkpoint namespace"),
     # Optional metadata filter for parity with POST (use JSON string to avoid FastAPI typing assertion on dict in query)
@@ -564,9 +510,7 @@ async def delete_thread(
     CASCADE DELETE automatically removes all run records when thread is deleted.
     """
     # Check if thread exists
-    stmt = select(ThreadORM).where(
-        ThreadORM.thread_id == thread_id, ThreadORM.user_id == user.identity
-    )
+    stmt = select(ThreadORM).where(ThreadORM.thread_id == thread_id, ThreadORM.user_id == user.identity)
     thread = await session.scalar(stmt)
     if not thread:
         raise HTTPException(404, f"Thread '{thread_id}' not found")
@@ -581,9 +525,7 @@ async def delete_thread(
 
     # Cancel active runs if they exist
     if active_runs_list:
-        logger.info(
-            f"Cancelling {len(active_runs_list)} active runs for thread {thread_id}"
-        )
+        logger.info(f"Cancelling {len(active_runs_list)} active runs for thread {thread_id}")
 
         for run in active_runs_list:
             run_id = run.run_id
@@ -608,9 +550,7 @@ async def delete_thread(
     await session.delete(thread)
     await session.commit()
 
-    logger.info(
-        f"Deleted thread {thread_id} (cancelled {len(active_runs_list)} active runs)"
-    )
+    logger.info(f"Deleted thread {thread_id} (cancelled {len(active_runs_list)} active runs)")
     return {"status": "deleted"}
 
 

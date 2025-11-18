@@ -27,9 +27,7 @@ def test_structlog_middleware_handles_exceptions_and_success():
     client_ok = TestClient(StructLogMiddleware(asgi_ok))
     # Since middleware now re-raises exceptions to allow app-level handlers to run,
     # create TestClient with raise_server_exceptions=False so we get a 500 response
-    client_boom = TestClient(
-        StructLogMiddleware(asgi_boom), raise_server_exceptions=False
-    )
+    client_boom = TestClient(StructLogMiddleware(asgi_boom), raise_server_exceptions=False)
 
     r = client_ok.get("/")
     assert r.status_code == 200

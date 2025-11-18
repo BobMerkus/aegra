@@ -31,9 +31,7 @@ class Context:
 
     max_search_results: int = field(
         default=10,
-        metadata={
-            "description": "The maximum number of search results to return for each search query."
-        },
+        metadata={"description": "The maximum number of search results to return for each search query."},
     )
 
     def __post_init__(self) -> None:

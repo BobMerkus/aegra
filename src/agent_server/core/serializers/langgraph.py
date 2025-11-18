@@ -54,9 +54,7 @@ class LangGraphSerializer(Serializer):
         except Exception as e:
             if isinstance(e, SerializationError):
                 raise
-            raise SerializationError(
-                f"Failed to serialize task: {str(e)}", task.__class__.__name__, e
-            ) from e
+            raise SerializationError(f"Failed to serialize task: {str(e)}", task.__class__.__name__, e) from e
 
     def serialize_interrupt(self, interrupt: Any) -> dict[str, Any]:
         """Serialize a LangGraph interrupt"""
@@ -99,7 +97,6 @@ class LangGraphSerializer(Serializer):
                     return interrupts
             except Exception as e:
                 logger.warning(
-                    f"Snapshot interrupt serialization failed: {e} "
-                    f"(snapshot_type={type(snapshot).__name__})"
+                    f"Snapshot interrupt serialization failed: {e} (snapshot_type={type(snapshot).__name__})"
                 )
         return interrupts if isinstance(interrupts, list) else []

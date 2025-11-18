@@ -53,9 +53,7 @@ class LangGraphUser(BaseUser):
         """Allow access to any additional fields from auth data"""
         if name in self._user_data:
             return self._user_data[name]
-        raise AttributeError(
-            f"'{self.__class__.__name__}' object has no attribute '{name}'"
-        )
+        raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
 
     def to_dict(self) -> MinimalUserDict:
         """Return the underlying user data dict"""
@@ -103,9 +101,7 @@ class LangGraphAuthBackend(AuthenticationBackend):
             logger.error(f"Error loading auth instance: {e}", exc_info=True)
             return None
 
-    async def authenticate(
-        self, conn: HTTPConnection
-    ) -> tuple[AuthCredentials, BaseUser] | None:
+    async def authenticate(self, conn: HTTPConnection) -> tuple[AuthCredentials, BaseUser] | None:
         """
         Authenticate request using LangGraph's auth system.
 
@@ -123,17 +119,13 @@ class LangGraphAuthBackend(AuthenticationBackend):
             return None
 
         if self.auth_instance._authenticate_handler is None:
-            logger.warning(
-                "No authenticate handler configured, skipping authentication"
-            )
+            logger.warning("No authenticate handler configured, skipping authentication")
             return None
 
         try:
             # Convert headers to dict format expected by LangGraph
             headers = {
-                key.decode() if isinstance(key, bytes) else key: value.decode()
-                if isinstance(value, bytes)
-                else value
+                key.decode() if isinstance(key, bytes) else key: value.decode() if isinstance(value, bytes) else value
                 for key, value in conn.headers.items()
             }
 
@@ -141,9 +133,7 @@ class LangGraphAuthBackend(AuthenticationBackend):
             user_data = await self.auth_instance._authenticate_handler(headers)
 
             if not user_data or not isinstance(user_data, dict):
-                raise AuthenticationError(
-                    "Invalid user data returned from auth handler"
-                )
+                raise AuthenticationError("Invalid user data returned from auth handler")
 
             if "identity" not in user_data:
                 raise AuthenticationError("Auth handler must return 'identity' field")

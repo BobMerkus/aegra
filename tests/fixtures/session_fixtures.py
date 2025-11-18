@@ -74,6 +74,4 @@ def override_session_dependency(app, session_class: type = BasicSession, **kwarg
     def session_factory():
         return session_class(**kwargs)
 
-    app.dependency_overrides[core_get_session] = override_get_session_dep(
-        session_factory
-    )
+    app.dependency_overrides[core_get_session] = override_get_session_dep(session_factory)

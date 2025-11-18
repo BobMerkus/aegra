@@ -32,9 +32,7 @@ class TestLangGraphServiceRealFiles:
             config_path = Path(temp_dir) / "aegra.json"
             config_path.write_text(json.dumps(config_data))
 
-            with patch(
-                "agent_server.services.langgraph_service.LangGraphService._ensure_default_assistants"
-            ):
+            with patch("agent_server.services.langgraph_service.LangGraphService._ensure_default_assistants"):
                 service = LangGraphService(str(config_path))
                 await service.initialize()
 
@@ -53,9 +51,7 @@ class TestLangGraphServiceRealFiles:
 
             monkeypatch.setenv("AEGRA_CONFIG", str(config_path))
 
-            with patch(
-                "agent_server.services.langgraph_service.LangGraphService._ensure_default_assistants"
-            ):
+            with patch("agent_server.services.langgraph_service.LangGraphService._ensure_default_assistants"):
                 service = LangGraphService()
                 await service.initialize()
 
@@ -75,9 +71,7 @@ class TestLangGraphServiceRealFiles:
             monkeypatch.delenv("AEGRA_CONFIG", raising=False)
             monkeypatch.chdir(temp_dir)
 
-            with patch(
-                "agent_server.services.langgraph_service.LangGraphService._ensure_default_assistants"
-            ):
+            with patch("agent_server.services.langgraph_service.LangGraphService._ensure_default_assistants"):
                 service = LangGraphService()
                 await service.initialize()
 
@@ -101,9 +95,7 @@ class TestLangGraphServiceRealFiles:
     async def test_initialize_missing_file(self):
         """Test error with missing config file"""
         with (
-            patch(
-                "agent_server.services.langgraph_service.LangGraphService._ensure_default_assistants"
-            ),
+            patch("agent_server.services.langgraph_service.LangGraphService._ensure_default_assistants"),
             patch("pathlib.Path.exists", return_value=False),
         ):
             service = LangGraphService("nonexistent.json")
@@ -119,9 +111,7 @@ class TestLangGraphServiceDatabase:
     async def test_get_graph_database_integration(self):
         """Test graph loading with database integration"""
         service = LangGraphService()
-        service._graph_registry = {
-            "db_graph": {"file_path": "./graphs/db.py", "export_name": "graph"}
-        }
+        service._graph_registry = {"db_graph": {"file_path": "./graphs/db.py", "export_name": "graph"}}
 
         mock_graph = DummyStateGraph()
         mock_compiled_graph = Mock()
@@ -144,9 +134,7 @@ class TestLangGraphServiceDatabase:
             assert result == mock_compiled_graph
             mock_db_manager.get_checkpointer.assert_called_once()
             mock_db_manager.get_store.assert_called_once()
-            mock_graph.compile.assert_called_once_with(
-                checkpointer=mock_checkpointer, store=mock_store
-            )
+            mock_graph.compile.assert_called_once_with(checkpointer=mock_checkpointer, store=mock_store)
 
     @pytest.mark.asyncio
     async def test_get_graph_already_compiled(self):
@@ -161,14 +149,10 @@ class TestLangGraphServiceDatabase:
 
         mock_compiled_graph = Mock()
         # Graph doesn't have compile method (already compiled)
-        del (
-            mock_compiled_graph.compile
-        )  # Remove compile method to simulate already compiled graph
+        del mock_compiled_graph.compile  # Remove compile method to simulate already compiled graph
 
         with (
-            patch.object(
-                service, "_load_graph_from_file", return_value=mock_compiled_graph
-            ),
+            patch.object(service, "_load_graph_from_file", return_value=mock_compiled_graph),
             patch("agent_server.core.database.db_manager") as mock_db_manager,
         ):
             mock_checkpointer = Mock()
@@ -275,9 +259,7 @@ class TestLangGraphServiceErrorHandling:
     async def test_get_graph_database_error(self):
         """Test error handling when database operations fail"""
         service = LangGraphService()
-        service._graph_registry = {
-            "error_graph": {"file_path": "./graphs/error.py", "export_name": "graph"}
-        }
+        service._graph_registry = {"error_graph": {"file_path": "./graphs/error.py", "export_name": "graph"}}
 
         mock_graph = Mock()
 
@@ -286,9 +268,7 @@ class TestLangGraphServiceErrorHandling:
             patch("agent_server.core.database.db_manager") as mock_db_manager,
         ):
             # Mock database error
-            mock_db_manager.get_checkpointer = AsyncMock(
-                side_effect=Exception("Database error")
-            )
+            mock_db_manager.get_checkpointer = AsyncMock(side_effect=Exception("Database error"))
 
             with pytest.raises(Exception, match="Database error"):
                 await service.get_graph("error_graph")
@@ -330,9 +310,7 @@ class TestLangGraphServiceErrorHandling:
             config_path.chmod(stat.S_IRUSR)
 
             with (
-                patch(
-                    "agent_server.services.langgraph_service.LangGraphService._ensure_default_assistants"
-                ),
+                patch("agent_server.services.langgraph_service.LangGraphService._ensure_default_assistants"),
                 patch(
                     "pathlib.Path.open",
                     side_effect=PermissionError("Permission denied"),
@@ -411,6 +389,4 @@ class TestLangGraphServiceConcurrency:
         assert service._graph_cache == {}
         # All results should be 0 (empty cache) - check individually
         # Note: concurrent execution may cause intermediate states
-        assert all(
-            result <= 3 for result in results
-        )  # Should be <= original cache size
+        assert all(result <= 3 for result in results)  # Should be <= original cache size

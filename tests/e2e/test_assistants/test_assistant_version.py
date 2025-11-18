@@ -41,9 +41,7 @@ async def test_assistant_versions():
     )
 
     # 4. Verify both versions exist
-    assistant_versions = await client.assistants.get_versions(
-        assistant_id=assistant["assistant_id"]
-    )
+    assistant_versions = await client.assistants.get_versions(assistant_id=assistant["assistant_id"])
     assert len(assistant_versions) == 2
 
     elog(

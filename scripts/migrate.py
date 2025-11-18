@@ -17,9 +17,7 @@ def run_command(cmd: str, description: str = ""):
         print(f"🔄 {description}")
 
     try:
-        result = subprocess.run(
-            cmd, shell=True, check=True, capture_output=True, text=True
-        )
+        result = subprocess.run(cmd, shell=True, check=True, capture_output=True, text=True)
         if result.stdout:
             print(result.stdout)
         return True
@@ -86,9 +84,7 @@ Examples:
         # Use subprocess.run directly to avoid shell quoting issues
         try:
             cmd_parts = ["alembic", "revision"] + sys.argv[2:]
-            result = subprocess.run(
-                cmd_parts, check=True, capture_output=True, text=True
-            )
+            result = subprocess.run(cmd_parts, check=True, capture_output=True, text=True)
             if result.stdout:
                 print(result.stdout)
             print("✅ New migration created!")

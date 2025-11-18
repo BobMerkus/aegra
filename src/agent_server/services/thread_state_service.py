@@ -17,9 +17,7 @@ class ThreadStateService:
     def __init__(self) -> None:
         self.serializer = LangGraphSerializer()
 
-    def convert_snapshot_to_thread_state(
-        self, snapshot: Any, thread_id: str, subgraphs: bool = False
-    ) -> ThreadState:
+    def convert_snapshot_to_thread_state(self, snapshot: Any, thread_id: str, subgraphs: bool = False) -> ThreadState:
         """Convert a LangGraph snapshot to ThreadState format"""
         try:
             # Extract basic values
@@ -40,9 +38,7 @@ class ThreadStateService:
                                 task["state"], thread_id, subgraphs=True
                             )
                         except Exception as e:
-                            logger.error(
-                                f"Failed to serialize subgraph state for task {task.get('id')}: {e}"
-                            )
+                            logger.error(f"Failed to serialize subgraph state for task {task.get('id')}: {e}")
                             task["state"] = None
 
             interrupts = self.serializer.extract_interrupts_from_snapshot(snapshot)
@@ -50,17 +46,13 @@ class ThreadStateService:
             # Create checkpoint objects
             current_checkpoint = self._create_checkpoint(snapshot.config, thread_id)
             parent_checkpoint = (
-                self._create_checkpoint(snapshot.parent_config, thread_id)
-                if snapshot.parent_config
-                else None
+                self._create_checkpoint(snapshot.parent_config, thread_id) if snapshot.parent_config else None
             )
 
             # Extract checkpoint IDs for backward compatibility
             checkpoint_id = self._extract_checkpoint_id(snapshot.config)
             parent_checkpoint_id = (
-                self._extract_checkpoint_id(snapshot.parent_config)
-                if snapshot.parent_config
-                else None
+                self._extract_checkpoint_id(snapshot.parent_config) if snapshot.parent_config else None
             )
 
             return ThreadState(
@@ -83,23 +75,16 @@ class ThreadStateService:
             )
             raise
 
-    def convert_snapshots_to_thread_states(
-        self, snapshots: list[Any], thread_id: str
-    ) -> list[ThreadState]:
+    def convert_snapshots_to_thread_states(self, snapshots: list[Any], thread_id: str) -> list[ThreadState]:
         """Convert multiple snapshots to ThreadState objects"""
         thread_states = []
 
         for i, snapshot in enumerate(snapshots):
             try:
-                thread_state = self.convert_snapshot_to_thread_state(
-                    snapshot, thread_id
-                )
+                thread_state = self.convert_snapshot_to_thread_state(snapshot, thread_id)
                 thread_states.append(thread_state)
             except Exception as e:
-                logger.error(
-                    f"Failed to convert snapshot in batch: {e} "
-                    f"(thread_id={thread_id}, snapshot_index={i})"
-                )
+                logger.error(f"Failed to convert snapshot in batch: {e} (thread_id={thread_id}, snapshot_index={i})")
                 # Continue with other snapshots rather than failing the entire batch
                 continue
 
@@ -121,9 +106,7 @@ class ThreadStateService:
     def _create_checkpoint(self, config: Any, thread_id: str) -> ThreadCheckpoint:
         """Create ThreadCheckpoint from config"""
         if not config or not isinstance(config, dict):
-            return ThreadCheckpoint(
-                checkpoint_id=None, thread_id=thread_id, checkpoint_ns=""
-            )
+            return ThreadCheckpoint(checkpoint_id=None, thread_id=thread_id, checkpoint_ns="")
 
         configurable = config.get("configurable", {})
         checkpoint_id = configurable.get("checkpoint_id")

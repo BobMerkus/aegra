@@ -76,9 +76,7 @@ class TestFormatSSEMessage:
         result = format_sse_message("test_event", data)
 
         assert "event: test_event\n" in result
-        data_line = [line for line in result.split("\n") if line.startswith("data: ")][
-            0
-        ]
+        data_line = [line for line in result.split("\n") if line.startswith("data: ")][0]
         parsed_data = json.loads(data_line.replace("data: ", ""))
         assert parsed_data == data
 

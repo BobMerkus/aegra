@@ -56,9 +56,7 @@ class TestSetThreadStatus:
         session.commit = AsyncMock()
 
         # Patch validate_thread_status in the utils module to verify it's called
-        with patch(
-            "agent_server.utils.status_compat.validate_thread_status"
-        ) as mock_validate:
+        with patch("agent_server.utils.status_compat.validate_thread_status") as mock_validate:
             mock_validate.return_value = "busy"
             await set_thread_status(session, "thread-123", "busy")
             mock_validate.assert_called_once_with("busy")

@@ -32,9 +32,7 @@ def validate_run_status(status: str) -> RunStatus:
     ]
 
     if status not in valid_statuses:
-        raise ValueError(
-            f"Invalid run status: {status}. Must be one of: {valid_statuses}"
-        )
+        raise ValueError(f"Invalid run status: {status}. Must be one of: {valid_statuses}")
 
     return status  # type: ignore
 
@@ -54,8 +52,6 @@ def validate_thread_status(status: str) -> ThreadStatus:
     valid_statuses: list[ThreadStatus] = ["idle", "busy", "interrupted", "error"]
 
     if status not in valid_statuses:
-        raise ValueError(
-            f"Invalid thread status: {status}. Must be one of: {valid_statuses}"
-        )
+        raise ValueError(f"Invalid thread status: {status}. Must be one of: {valid_statuses}")
 
     return status  # type: ignore

@@ -54,8 +54,7 @@ class LangGraphService:
 
         if not resolved_path.exists():
             raise ValueError(
-                "Configuration file not found. Expected one of: "
-                "AEGRA_CONFIG path, ./aegra.json, or ./langgraph.json"
+                "Configuration file not found. Expected one of: AEGRA_CONFIG path, ./aegra.json, or ./langgraph.json"
             )
 
         # Persist selected path for later reference
@@ -105,11 +104,7 @@ class LangGraphService:
         try:
             for graph_id in self._graph_registry:
                 assistant_id = str(uuid5(NS, graph_id))
-                existing = await session.scalar(
-                    select(AssistantORM).where(
-                        AssistantORM.assistant_id == assistant_id
-                    )
-                )
+                existing = await session.scalar(select(AssistantORM).where(AssistantORM.assistant_id == assistant_id))
                 if existing:
                     continue
                 session.add(
@@ -162,17 +157,13 @@ class LangGraphService:
             # a Postgres checkpointer for durable state.
 
             logger.info(f"🔧 Compiling graph '{graph_id}' with Postgres persistence")
-            compiled_graph = base_graph.compile(
-                checkpointer=checkpointer_cm, store=store_cm
-            )
+            compiled_graph = base_graph.compile(checkpointer=checkpointer_cm, store=store_cm)
         else:
             # Graph was already compiled by the module.  Create a shallow copy
             # that injects our Postgres checkpointer *unless* the author already
             # set one.
             try:
-                compiled_graph = base_graph.copy(
-                    update={"checkpointer": checkpointer_cm, "store": store_cm}
-                )
+                compiled_graph = base_graph.copy(update={"checkpointer": checkpointer_cm, "store": store_cm})
             except Exception:
                 # Fallback: property may be immutably set; run as-is with warning
                 logger.warning(
@@ -192,9 +183,7 @@ class LangGraphService:
             raise ValueError(f"Graph file not found: {file_path}")
 
         # Dynamic import of graph module
-        spec = importlib.util.spec_from_file_location(
-            f"graphs.{graph_id}", str(file_path.resolve())
-        )
+        spec = importlib.util.spec_from_file_location(f"graphs.{graph_id}", str(file_path.resolve()))
         if spec is None or spec.loader is None:
             raise ValueError(f"Failed to load graph module: {file_path}")
 
@@ -214,10 +203,7 @@ class LangGraphService:
 
     def list_graphs(self) -> dict[str, str]:
         """List all available graphs"""
-        return {
-            graph_id: info["file_path"]
-            for graph_id, info in self._graph_registry.items()
-        }
+        return {graph_id: info["file_path"] for graph_id, info in self._graph_registry.items()}
 
     def invalidate_cache(self, graph_id: str = None):
         """Invalidate graph cache for hot-reload"""
@@ -258,9 +244,7 @@ def inject_user_context(user, base_config: dict = None) -> dict:
     if user:
         # Basic user identity for multi-tenant scoping
         config["configurable"].setdefault("user_id", user.identity)
-        config["configurable"].setdefault(
-            "user_display_name", getattr(user, "display_name", user.identity)
-        )
+        config["configurable"].setdefault("user_display_name", getattr(user, "display_name", user.identity))
 
         # Full auth payload for graph nodes
         if "langgraph_auth_user" not in config["configurable"]:
@@ -268,9 +252,7 @@ def inject_user_context(user, base_config: dict = None) -> dict:
                 config["configurable"]["langgraph_auth_user"] = user.to_dict()  # type: ignore[attr-defined]
             except Exception:
                 # Fallback: minimal dict if to_dict unavailable
-                config["configurable"]["langgraph_auth_user"] = {
-                    "identity": user.identity
-                }
+                config["configurable"]["langgraph_auth_user"] = {"identity": user.identity}
 
     return config
 
@@ -328,9 +310,7 @@ def create_run_config(
 
     # Apply checkpoint parameters if provided
     if checkpoint and isinstance(checkpoint, dict):
-        cfg["configurable"].update(
-            {k: v for k, v in checkpoint.items() if v is not None}
-        )
+        cfg["configurable"].update({k: v for k, v in checkpoint.items() if v is not None})
 
     # Finally inject user context via existing helper
     return inject_user_context(user, cfg)

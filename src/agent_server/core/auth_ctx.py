@@ -19,10 +19,8 @@ from langgraph_sdk import Auth  # type: ignore
 from starlette.authentication import AuthCredentials, BaseUser
 
 # Internal context-var storing the current auth context (or None when absent)
-_AuthCtx: contextvars.ContextVar[Auth.types.BaseAuthContext | None] = (
-    contextvars.ContextVar(  # type: ignore[attr-defined]
-        "LangGraphAuthContext", default=None
-    )
+_AuthCtx: contextvars.ContextVar[Auth.types.BaseAuthContext | None] = contextvars.ContextVar(  # type: ignore[attr-defined]
+    "LangGraphAuthContext", default=None
 )
 
 

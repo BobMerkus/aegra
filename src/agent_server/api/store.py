@@ -19,9 +19,7 @@ router = APIRouter()
 
 
 @router.put("/store/items")
-async def put_store_item(
-    request: StorePutRequest, user: User = Depends(get_current_user)
-):
+async def put_store_item(request: StorePutRequest, user: User = Depends(get_current_user)):
     """Store an item in the LangGraph store"""
 
     # Apply user namespace scoping
@@ -32,9 +30,7 @@ async def put_store_item(
 
     store = await db_manager.get_store()
 
-    await store.aput(
-        namespace=tuple(scoped_namespace), key=request.key, value=request.value
-    )
+    await store.aput(namespace=tuple(scoped_namespace), key=request.key, value=request.value)
 
     return {"status": "stored"}
 
@@ -108,15 +104,11 @@ async def delete_store_item(
 
 
 @router.post("/store/items/search", response_model=StoreSearchResponse)
-async def search_store_items(
-    request: StoreSearchRequest, user: User = Depends(get_current_user)
-):
+async def search_store_items(request: StoreSearchRequest, user: User = Depends(get_current_user)):
     """Search items in the LangGraph store"""
 
     # Apply user namespace scoping
-    scoped_prefix = apply_user_namespace_scoping(
-        user.identity, request.namespace_prefix
-    )
+    scoped_prefix = apply_user_namespace_scoping(user.identity, request.namespace_prefix)
 
     # Get LangGraph store from database manager
     from ..core.database import db_manager
@@ -132,10 +124,7 @@ async def search_store_items(
         offset=request.offset or 0,
     )
 
-    items = [
-        StoreItem(key=r.key, value=r.value, namespace=list(r.namespace))
-        for r in results
-    ]
+    items = [StoreItem(key=r.key, value=r.value, namespace=list(r.namespace)) for r in results]
 
     return StoreSearchResponse(
         items=items,

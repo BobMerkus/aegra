@@ -21,9 +21,7 @@ async def test_get_assistant_graph():
 
     try:
         # 2. Get the graph structure without xray
-        graph = await client.assistants.get_graph(
-            assistant_id=assistant["assistant_id"]
-        )
+        graph = await client.assistants.get_graph(assistant_id=assistant["assistant_id"])
 
         # 3. Verify graph structure
         assert "nodes" in graph, "Graph should have nodes"
@@ -64,9 +62,7 @@ async def test_get_assistant_graph_with_xray_boolean():
 
     try:
         # 2. Get the graph structure with xray=True
-        graph = await client.assistants.get_graph(
-            assistant_id=assistant["assistant_id"], xray=True
-        )
+        graph = await client.assistants.get_graph(assistant_id=assistant["assistant_id"], xray=True)
 
         # 3. Verify graph structure
         assert "nodes" in graph, "Graph should have nodes"
@@ -106,9 +102,7 @@ async def test_get_assistant_graph_with_xray_integer():
 
     try:
         # 2. Get the graph structure with xray=1 (depth of 1)
-        graph = await client.assistants.get_graph(
-            assistant_id=assistant["assistant_id"], xray=1
-        )
+        graph = await client.assistants.get_graph(assistant_id=assistant["assistant_id"], xray=1)
 
         # 3. Verify graph structure
         assert "nodes" in graph, "Graph should have nodes"
@@ -141,9 +135,7 @@ async def test_get_assistant_graph_not_found():
 
     # Try to get graph for non-existent assistant
     with pytest.raises(Exception) as exc_info:
-        await client.assistants.get_graph(
-            assistant_id="00000000-0000-0000-0000-000000000000"
-        )
+        await client.assistants.get_graph(assistant_id="00000000-0000-0000-0000-000000000000")
 
     # Verify it's a 404 error
     assert "404" in str(exc_info.value) or "not found" in str(exc_info.value).lower()
@@ -170,9 +162,7 @@ async def test_get_assistant_subgraphs():
 
     try:
         # 2. Get the subgraphs
-        subgraphs = await client.assistants.get_subgraphs(
-            assistant_id=assistant["assistant_id"]
-        )
+        subgraphs = await client.assistants.get_subgraphs(assistant_id=assistant["assistant_id"])
 
         # 3. Verify subgraphs structure
         assert isinstance(subgraphs, dict), "Subgraphs should be a dictionary"
@@ -211,9 +201,7 @@ async def test_get_assistant_subgraphs_with_recurse():
 
     try:
         # 2. Get the subgraphs recursively
-        subgraphs = await client.assistants.get_subgraphs(
-            assistant_id=assistant["assistant_id"], recurse=True
-        )
+        subgraphs = await client.assistants.get_subgraphs(assistant_id=assistant["assistant_id"], recurse=True)
 
         # 3. Verify subgraphs structure
         assert isinstance(subgraphs, dict), "Subgraphs should be a dictionary"
@@ -244,9 +232,7 @@ async def test_get_assistant_subgraphs_not_found():
 
     # Try to get subgraphs for non-existent assistant
     with pytest.raises(Exception) as exc_info:
-        await client.assistants.get_subgraphs(
-            assistant_id="00000000-0000-0000-0000-000000000000"
-        )
+        await client.assistants.get_subgraphs(assistant_id="00000000-0000-0000-0000-000000000000")
 
     # Verify it's a 404 error
     assert "404" in str(exc_info.value) or "not found" in str(exc_info.value).lower()
@@ -274,9 +260,7 @@ async def test_system_assistant_graph_access():
 
     if system_assistant:
         # Try to get the graph for system assistant
-        graph = await client.assistants.get_graph(
-            assistant_id=system_assistant["assistant_id"]
-        )
+        graph = await client.assistants.get_graph(assistant_id=system_assistant["assistant_id"])
 
         # Verify graph structure
         assert "nodes" in graph, "Graph should have nodes"

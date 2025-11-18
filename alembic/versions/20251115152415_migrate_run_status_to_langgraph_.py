@@ -35,9 +35,7 @@ def upgrade() -> None:
     op.execute(sa.text("UPDATE runs SET status = 'error' WHERE status = 'failed'"))
 
     # Update cancelled → interrupted
-    op.execute(
-        sa.text("UPDATE runs SET status = 'interrupted' WHERE status = 'cancelled'")
-    )
+    op.execute(sa.text("UPDATE runs SET status = 'interrupted' WHERE status = 'cancelled'"))
 
     # Update streaming → running (legacy status for active streaming runs)
     op.execute(sa.text("UPDATE runs SET status = 'running' WHERE status = 'streaming'"))
@@ -65,9 +63,7 @@ def downgrade() -> None:
 
     # Update interrupted → cancelled
     # Note: This is lossy - we can't distinguish original cancelled vs interrupted
-    op.execute(
-        sa.text("UPDATE runs SET status = 'cancelled' WHERE status = 'interrupted'")
-    )
+    op.execute(sa.text("UPDATE runs SET status = 'cancelled' WHERE status = 'interrupted'"))
 
     # Update running → streaming
     # Note: This is lossy - we can't distinguish original running vs streaming

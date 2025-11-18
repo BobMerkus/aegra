@@ -74,18 +74,14 @@ class TestWaitForRunExceptionPaths:
 
         # Mock dependencies
         with (
-            patch(
-                "agent_server.api.runs._validate_resume_command", new_callable=AsyncMock
-            ),
+            patch("agent_server.api.runs._validate_resume_command", new_callable=AsyncMock),
             patch("agent_server.api.runs.get_langgraph_service") as mock_lg_service,
             patch(
                 "agent_server.api.runs.resolve_assistant_id",
                 return_value="test-assistant",
             ),
             patch("agent_server.api.runs.set_thread_status", new_callable=AsyncMock),
-            patch(
-                "agent_server.api.runs.update_thread_metadata", new_callable=AsyncMock
-            ),
+            patch("agent_server.api.runs.update_thread_metadata", new_callable=AsyncMock),
             patch("agent_server.api.runs.uuid4", return_value=run_id),
             patch("agent_server.api.runs.asyncio.create_task") as mock_create_task,
             patch("agent_server.api.runs.asyncio.wait_for") as mock_wait_for,
@@ -157,18 +153,14 @@ class TestWaitForRunExceptionPaths:
         session.refresh = AsyncMock()
 
         with (
-            patch(
-                "agent_server.api.runs._validate_resume_command", new_callable=AsyncMock
-            ),
+            patch("agent_server.api.runs._validate_resume_command", new_callable=AsyncMock),
             patch("agent_server.api.runs.get_langgraph_service") as mock_lg_service,
             patch(
                 "agent_server.api.runs.resolve_assistant_id",
                 return_value="test-assistant",
             ),
             patch("agent_server.api.runs.set_thread_status", new_callable=AsyncMock),
-            patch(
-                "agent_server.api.runs.update_thread_metadata", new_callable=AsyncMock
-            ),
+            patch("agent_server.api.runs.update_thread_metadata", new_callable=AsyncMock),
             patch("agent_server.api.runs.uuid4", return_value=run_id),
             patch("agent_server.api.runs.asyncio.create_task") as mock_create_task,
             patch("agent_server.api.runs.asyncio.wait_for") as mock_wait_for,
@@ -234,18 +226,14 @@ class TestWaitForRunExceptionPaths:
         session.refresh = AsyncMock()
 
         with (
-            patch(
-                "agent_server.api.runs._validate_resume_command", new_callable=AsyncMock
-            ),
+            patch("agent_server.api.runs._validate_resume_command", new_callable=AsyncMock),
             patch("agent_server.api.runs.get_langgraph_service") as mock_lg_service,
             patch(
                 "agent_server.api.runs.resolve_assistant_id",
                 return_value="test-assistant",
             ),
             patch("agent_server.api.runs.set_thread_status", new_callable=AsyncMock),
-            patch(
-                "agent_server.api.runs.update_thread_metadata", new_callable=AsyncMock
-            ),
+            patch("agent_server.api.runs.update_thread_metadata", new_callable=AsyncMock),
             patch("agent_server.api.runs.uuid4", return_value=run_id),
             patch("agent_server.api.runs.asyncio.create_task") as mock_create_task,
             patch("agent_server.api.runs.asyncio.wait_for") as mock_wait_for,
@@ -297,18 +285,14 @@ class TestWaitForRunExceptionPaths:
         session.refresh = AsyncMock()
 
         with (
-            patch(
-                "agent_server.api.runs._validate_resume_command", new_callable=AsyncMock
-            ),
+            patch("agent_server.api.runs._validate_resume_command", new_callable=AsyncMock),
             patch("agent_server.api.runs.get_langgraph_service") as mock_lg_service,
             patch(
                 "agent_server.api.runs.resolve_assistant_id",
                 return_value="test-assistant",
             ),
             patch("agent_server.api.runs.set_thread_status", new_callable=AsyncMock),
-            patch(
-                "agent_server.api.runs.update_thread_metadata", new_callable=AsyncMock
-            ),
+            patch("agent_server.api.runs.update_thread_metadata", new_callable=AsyncMock),
             patch("agent_server.api.runs.uuid4", return_value=run_id),
             patch("agent_server.api.runs.asyncio.create_task") as mock_create_task,
             patch("agent_server.api.runs.asyncio.wait_for") as mock_wait_for,
@@ -375,18 +359,14 @@ class TestWaitForRunExceptionPaths:
         session.refresh = AsyncMock()
 
         with (
-            patch(
-                "agent_server.api.runs._validate_resume_command", new_callable=AsyncMock
-            ),
+            patch("agent_server.api.runs._validate_resume_command", new_callable=AsyncMock),
             patch("agent_server.api.runs.get_langgraph_service") as mock_lg_service,
             patch(
                 "agent_server.api.runs.resolve_assistant_id",
                 return_value="test-assistant",
             ),
             patch("agent_server.api.runs.set_thread_status", new_callable=AsyncMock),
-            patch(
-                "agent_server.api.runs.update_thread_metadata", new_callable=AsyncMock
-            ),
+            patch("agent_server.api.runs.update_thread_metadata", new_callable=AsyncMock),
             patch("agent_server.api.runs.uuid4", return_value=run_id),
             patch("agent_server.api.runs.asyncio.create_task") as mock_create_task,
             patch("agent_server.api.runs.asyncio.wait_for") as mock_wait_for,
@@ -454,18 +434,14 @@ class TestWaitForRunExceptionPaths:
         session.refresh = AsyncMock()
 
         with (
-            patch(
-                "agent_server.api.runs._validate_resume_command", new_callable=AsyncMock
-            ),
+            patch("agent_server.api.runs._validate_resume_command", new_callable=AsyncMock),
             patch("agent_server.api.runs.get_langgraph_service") as mock_lg_service,
             patch(
                 "agent_server.api.runs.resolve_assistant_id",
                 return_value="test-assistant",
             ),
             patch("agent_server.api.runs.set_thread_status", new_callable=AsyncMock),
-            patch(
-                "agent_server.api.runs.update_thread_metadata", new_callable=AsyncMock
-            ),
+            patch("agent_server.api.runs.update_thread_metadata", new_callable=AsyncMock),
             patch("agent_server.api.runs.uuid4", return_value=run_id),
             patch("agent_server.api.runs.asyncio.create_task") as mock_create_task,
             patch("agent_server.api.runs.asyncio.wait_for") as mock_wait_for,
@@ -530,18 +506,14 @@ class TestWaitForRunExceptionPaths:
         session.refresh = AsyncMock()
 
         with (
-            patch(
-                "agent_server.api.runs._validate_resume_command", new_callable=AsyncMock
-            ),
+            patch("agent_server.api.runs._validate_resume_command", new_callable=AsyncMock),
             patch("agent_server.api.runs.get_langgraph_service") as mock_lg_service,
             patch(
                 "agent_server.api.runs.resolve_assistant_id",
                 return_value="test-assistant",
             ),
             patch("agent_server.api.runs.set_thread_status", new_callable=AsyncMock),
-            patch(
-                "agent_server.api.runs.update_thread_metadata", new_callable=AsyncMock
-            ),
+            patch("agent_server.api.runs.update_thread_metadata", new_callable=AsyncMock),
             patch("agent_server.api.runs.uuid4", return_value=run_id),
             patch("agent_server.api.runs.asyncio.create_task") as mock_create_task,
             patch("agent_server.api.runs.asyncio.wait_for") as mock_wait_for,
@@ -589,18 +561,14 @@ class TestWaitForRunExceptionPaths:
         session.scalar.return_value = assistant
 
         with (
-            patch(
-                "agent_server.api.runs._validate_resume_command", new_callable=AsyncMock
-            ),
+            patch("agent_server.api.runs._validate_resume_command", new_callable=AsyncMock),
             patch("agent_server.api.runs.get_langgraph_service") as mock_lg_service,
             patch(
                 "agent_server.api.runs.resolve_assistant_id",
                 return_value="test-assistant",
             ),
             patch("agent_server.api.runs.set_thread_status", new_callable=AsyncMock),
-            patch(
-                "agent_server.api.runs.update_thread_metadata", new_callable=AsyncMock
-            ),
+            patch("agent_server.api.runs.update_thread_metadata", new_callable=AsyncMock),
         ):
             # Graph list doesn't include assistant's graph
             mock_lg_service.return_value.list_graphs.return_value = ["other-graph"]
@@ -662,18 +630,14 @@ class TestWaitForRunExceptionPaths:
         session.refresh = AsyncMock()
 
         with (
-            patch(
-                "agent_server.api.runs._validate_resume_command", new_callable=AsyncMock
-            ),
+            patch("agent_server.api.runs._validate_resume_command", new_callable=AsyncMock),
             patch("agent_server.api.runs.get_langgraph_service") as mock_lg_service,
             patch(
                 "agent_server.api.runs.resolve_assistant_id",
                 return_value="test-assistant",
             ),
             patch("agent_server.api.runs.set_thread_status", new_callable=AsyncMock),
-            patch(
-                "agent_server.api.runs.update_thread_metadata", new_callable=AsyncMock
-            ),
+            patch("agent_server.api.runs.update_thread_metadata", new_callable=AsyncMock),
             patch("agent_server.api.runs.uuid4", return_value=run_id),
             patch("agent_server.api.runs.asyncio.create_task") as mock_create_task,
             patch("agent_server.api.runs.asyncio.wait_for") as mock_wait_for,
@@ -738,18 +702,14 @@ class TestWaitForRunExceptionPaths:
         session.refresh = AsyncMock()
 
         with (
-            patch(
-                "agent_server.api.runs._validate_resume_command", new_callable=AsyncMock
-            ),
+            patch("agent_server.api.runs._validate_resume_command", new_callable=AsyncMock),
             patch("agent_server.api.runs.get_langgraph_service") as mock_lg_service,
             patch(
                 "agent_server.api.runs.resolve_assistant_id",
                 return_value="test-assistant",
             ),
             patch("agent_server.api.runs.set_thread_status", new_callable=AsyncMock),
-            patch(
-                "agent_server.api.runs.update_thread_metadata", new_callable=AsyncMock
-            ),
+            patch("agent_server.api.runs.update_thread_metadata", new_callable=AsyncMock),
             patch("agent_server.api.runs.uuid4", return_value=run_id),
             patch("agent_server.api.runs.asyncio.create_task") as mock_create_task,
             patch("agent_server.api.runs.asyncio.wait_for") as mock_wait_for,

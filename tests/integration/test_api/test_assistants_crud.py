@@ -50,9 +50,7 @@ class TestCreateAssistant:
 
     def test_create_assistant_with_metadata(self, client, mock_assistant_service):
         """Test creating assistant with rich metadata"""
-        assistant = make_assistant(
-            metadata={"description": "A helpful assistant", "tags": ["prod", "v1"]}
-        )
+        assistant = make_assistant(metadata={"description": "A helpful assistant", "tags": ["prod", "v1"]})
         mock_assistant_service.create_assistant.return_value = assistant
 
         resp = client.post(
@@ -72,9 +70,7 @@ class TestCreateAssistant:
         data = resp.json()
         # Metadata may be aliased as metadata_dict in the response
         metadata = data.get("metadata", data.get("metadata_dict", {}))
-        assert metadata.get("description") == "A helpful assistant" or metadata.get(
-            "tags"
-        ) == ["prod", "v1"]
+        assert metadata.get("description") == "A helpful assistant" or metadata.get("tags") == ["prod", "v1"]
 
     def test_create_assistant_with_config(self, client, mock_assistant_service):
         """Test creating assistant with custom config"""
@@ -241,9 +237,7 @@ class TestDeleteAssistant:
         assert resp.status_code == 200
         data = resp.json()
         assert data["status"] == "deleted"
-        mock_assistant_service.delete_assistant.assert_called_once_with(
-            "test-assistant-123", "test-user"
-        )
+        mock_assistant_service.delete_assistant.assert_called_once_with("test-assistant-123", "test-user")
 
     def test_delete_assistant_not_found(self, client, mock_assistant_service):
         """Test deleting non-existent assistant"""
@@ -395,9 +389,7 @@ class TestSearchAssistants:
         data = resp.json()
         assert len(data) == 1
 
-    def test_search_assistants_by_multiple_metadata_fields(
-        self, client, mock_assistant_service
-    ):
+    def test_search_assistants_by_multiple_metadata_fields(self, client, mock_assistant_service):
         """Test searching by multiple metadata fields"""
         assistants = [
             make_assistant("asst-1", metadata={"env": "prod", "region": "us-east"}),
@@ -465,9 +457,7 @@ class TestSearchAssistants:
     def test_search_assistants_combined_filters(self, client, mock_assistant_service):
         """Test searching with multiple filter criteria"""
         assistants = [
-            make_assistant(
-                "asst-1", "Prod Assistant", "prod-graph", metadata={"env": "prod"}
-            ),
+            make_assistant("asst-1", "Prod Assistant", "prod-graph", metadata={"env": "prod"}),
         ]
         mock_assistant_service.search_assistants.return_value = assistants
 

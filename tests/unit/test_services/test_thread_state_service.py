@@ -102,9 +102,7 @@ def test_convert_snapshot_to_thread_state_subgraphs_recurses():
         interrupts=(top_interrupt,),
     )
 
-    result = service.convert_snapshot_to_thread_state(
-        snapshot, "thread-123", subgraphs=True
-    )
+    result = service.convert_snapshot_to_thread_state(snapshot, "thread-123", subgraphs=True)
 
     nested_state = result.tasks[0]["state"]
     assert nested_state.values == {"foo": "Initial subgraph value."}
@@ -113,9 +111,7 @@ def test_convert_snapshot_to_thread_state_subgraphs_recurses():
     assert nested_state.checkpoint.checkpoint_ns == "child"
     assert nested_state.parent_checkpoint is not None
     assert nested_state.parent_checkpoint.checkpoint_id == "checkpoint-parent"
-    assert nested_state.interrupts == [
-        {"value": "Provide value:", "id": "child-interrupt"}
-    ]
+    assert nested_state.interrupts == [{"value": "Provide value:", "id": "child-interrupt"}]
 
 
 def test_convert_snapshots_to_thread_states_skips_failures():

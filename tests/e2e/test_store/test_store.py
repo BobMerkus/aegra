@@ -22,9 +22,7 @@ async def test_store_endpoints_via_sdk():
     elog("store.get_item", got)
     assert got["key"] == key
     assert got["value"] == value
-    assert got.get("namespace") in (ns, ["users"]) or isinstance(
-        got.get("namespace"), list
-    )
+    assert got.get("namespace") in (ns, ["users"]) or isinstance(got.get("namespace"), list)
 
     # Search by namespace prefix
     search = await client.store.search_items(["notes"], limit=10)

@@ -184,9 +184,7 @@ class TestExtractGraphSchemas:
 
         # Mock config schema
         mock_graph.config_schema.return_value = Mock()
-        mock_graph.config_schema.return_value.model_fields = {
-            "configurable": Mock(annotation=dict)
-        }
+        mock_graph.config_schema.return_value.model_fields = {"configurable": Mock(annotation=dict)}
         mock_graph.config_type = Mock()
         mock_graph.config_type.__name__ = "TestConfig"
 
@@ -273,9 +271,7 @@ class TestExtractGraphSchemas:
 
         # Mock config schema
         mock_graph.config_schema.return_value = Mock()
-        mock_graph.config_schema.return_value.model_fields = {
-            "configurable": Mock(annotation=dict)
-        }
+        mock_graph.config_schema.return_value.model_fields = {"configurable": Mock(annotation=dict)}
         mock_graph.config_type = Mock()
         mock_graph.config_type.__name__ = "ComplexConfig"
 

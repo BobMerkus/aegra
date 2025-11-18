@@ -35,9 +35,7 @@ def _merge_jsonb(*objects: dict) -> dict:
     return result
 
 
-async def _filter_context_by_schema(
-    context: dict[str, Any], context_schema: dict | None
-) -> dict[str, Any]:
+async def _filter_context_by_schema(context: dict[str, Any], context_schema: dict | None) -> dict[str, Any]:
     """Filter context parameters based on the context schema."""
     if not context_schema or not context:
         return context

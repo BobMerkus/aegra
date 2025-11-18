@@ -25,9 +25,7 @@ class TestStreamingInterruptProcessing:
         raw_event = ("updates", {"__interrupt__": [{"value": "test", "id": "123"}]})
         only_interrupt_updates = True
 
-        processed_event, should_skip = streaming_service._process_interrupt_updates(
-            raw_event, only_interrupt_updates
-        )
+        processed_event, should_skip = streaming_service._process_interrupt_updates(raw_event, only_interrupt_updates)
 
         # Should convert to values event
         assert processed_event[0] == "values"
@@ -40,9 +38,7 @@ class TestStreamingInterruptProcessing:
         raw_event = ("updates", {"messages": [{"role": "ai", "content": "test"}]})
         only_interrupt_updates = True
 
-        processed_event, should_skip = streaming_service._process_interrupt_updates(
-            raw_event, only_interrupt_updates
-        )
+        processed_event, should_skip = streaming_service._process_interrupt_updates(raw_event, only_interrupt_updates)
 
         # Should skip non-interrupt updates
         assert processed_event == raw_event
@@ -54,9 +50,7 @@ class TestStreamingInterruptProcessing:
         raw_event = ("updates", {"__interrupt__": [{"value": "test", "id": "123"}]})
         only_interrupt_updates = False
 
-        processed_event, should_skip = streaming_service._process_interrupt_updates(
-            raw_event, only_interrupt_updates
-        )
+        processed_event, should_skip = streaming_service._process_interrupt_updates(raw_event, only_interrupt_updates)
 
         # Should not modify event when not in only_interrupt_updates mode
         assert processed_event == raw_event
@@ -68,9 +62,7 @@ class TestStreamingInterruptProcessing:
         raw_event = ("values", {"messages": [{"role": "ai", "content": "test"}]})
         only_interrupt_updates = True
 
-        processed_event, should_skip = streaming_service._process_interrupt_updates(
-            raw_event, only_interrupt_updates
-        )
+        processed_event, should_skip = streaming_service._process_interrupt_updates(raw_event, only_interrupt_updates)
 
         # Should pass through unchanged
         assert processed_event == raw_event
@@ -105,9 +97,7 @@ class TestEventConverter:
         # Mock stored event object (stored as values, not updates)
         stored_event = Mock()
         stored_event.event = "values"
-        stored_event.data = {
-            "chunk": {"__interrupt__": [{"value": "test", "id": "123"}]}
-        }
+        stored_event.data = {"chunk": {"__interrupt__": [{"value": "test", "id": "123"}]}}
         stored_event.id = "event-456"
 
         sse_event = event_converter.convert_stored_to_sse(stored_event, "run-123")
@@ -178,11 +168,7 @@ class TestInterruptEventFlow:
         # 1. Raw interrupt event from LangGraph
         raw_interrupt_event = (
             "updates",
-            {
-                "__interrupt__": [
-                    {"value": {"message": "Approve tool?", "tools": []}, "id": "int-1"}
-                ]
-            },
+            {"__interrupt__": [{"value": {"message": "Approve tool?", "tools": []}, "id": "int-1"}]},
         )
 
         # 2. Process through streaming service (only_interrupt_updates=True)

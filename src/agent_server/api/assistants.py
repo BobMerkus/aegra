@@ -47,9 +47,7 @@ async def list_assistants(
     return AssistantList(assistants=assistants, total=len(assistants))
 
 
-@router.post(
-    "/assistants/search", response_model=list[Assistant], response_model_by_alias=False
-)
+@router.post("/assistants/search", response_model=list[Assistant], response_model_by_alias=False)
 async def search_assistants(
     request: AssistantSearchRequest,
     user: User = Depends(get_current_user),
@@ -115,9 +113,7 @@ async def delete_assistant(
 )
 async def set_assistant_latest(
     assistant_id: str,
-    version: int = Body(
-        ..., embed=True, description="The version number to set as latest"
-    ),
+    version: int = Body(..., embed=True, description="The version number to set as latest"),
     user: User = Depends(get_current_user),
     service: AssistantService = Depends(get_assistant_service),
 ):
@@ -171,6 +167,4 @@ async def get_assistant_subgraphs(
     service: AssistantService = Depends(get_assistant_service),
 ):
     """Get subgraphs of an assistant"""
-    return await service.get_assistant_subgraphs(
-        assistant_id, namespace, recurse, user.identity
-    )
+    return await service.get_assistant_subgraphs(assistant_id, namespace, recurse, user.identity)

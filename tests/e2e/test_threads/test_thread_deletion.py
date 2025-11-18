@@ -175,9 +175,7 @@ async def test_thread_deletion_multiple_runs():
         input={"messages": [{"role": "user", "content": "Second run"}]},
     )
 
-    elog(
-        "Created multiple runs", {"run1_id": run1["run_id"], "run2_id": run2["run_id"]}
-    )
+    elog("Created multiple runs", {"run1_id": run1["run_id"], "run2_id": run2["run_id"]})
 
     # 3. Verify multiple runs exist
     runs_list = await client.runs.list(thread_id)

@@ -14,9 +14,7 @@ from react_agent.utils import load_chat_model
 builder = StateGraph(State, input_schema=InputState, context_schema=Context)
 
 
-async def no_stream(
-    state: State, runtime: Runtime[Context]
-) -> dict[str, list[AIMessage]]:
+async def no_stream(state: State, runtime: Runtime[Context]) -> dict[str, list[AIMessage]]:
     """Call the LLM powering our "agent" with the langsmith:nostream tag.
 
     This function prepares the prompt, initializes the model with the langsmith:nostream tag, and processes the response.
@@ -29,21 +27,15 @@ async def no_stream(
         dict: A dictionary containing the model's response message.
     """
     # Initialize the model with the langsmith:nostream tag
-    model = load_chat_model(runtime.context.model).with_config(
-        config={"tags": ["langsmith:nostream"]}
-    )
+    model = load_chat_model(runtime.context.model).with_config(config={"tags": ["langsmith:nostream"]})
 
     # Format the system prompt
-    system_message = runtime.context.system_prompt.format(
-        system_time=datetime.now(tz=UTC).isoformat()
-    )
+    system_message = runtime.context.system_prompt.format(system_time=datetime.now(tz=UTC).isoformat())
 
     # Get the model's response
     response = cast(
         "AIMessage",
-        await model.ainvoke(
-            [{"role": "system", "content": system_message}, *state.messages]
-        ),
+        await model.ainvoke([{"role": "system", "content": system_message}, *state.messages]),
     )
     # Return the model's response as a list to be added to existing messages
     return {"messages": [response]}

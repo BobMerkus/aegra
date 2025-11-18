@@ -82,18 +82,14 @@ def mock_langgraph():
             "configurable": {
                 "thread_id": config.get("configurable", {}).get("thread_id"),
                 "checkpoint_id": "cp_1",
-                "checkpoint_ns": config.get("configurable", {}).get(
-                    "checkpoint_ns", ""
-                ),
+                "checkpoint_ns": config.get("configurable", {}).get("checkpoint_ns", ""),
             }
         }
         c2 = {
             "configurable": {
                 "thread_id": config.get("configurable", {}).get("thread_id"),
                 "checkpoint_id": "cp_2",
-                "checkpoint_ns": config.get("configurable", {}).get(
-                    "checkpoint_ns", ""
-                ),
+                "checkpoint_ns": config.get("configurable", {}).get("checkpoint_ns", ""),
             }
         }
         return FakeAgent(

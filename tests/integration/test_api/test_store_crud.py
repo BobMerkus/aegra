@@ -257,9 +257,7 @@ class TestSearchStoreItems:
 
     def test_search_items_with_pagination(self, client, mock_store):
         """Test searching with pagination"""
-        mock_results = [
-            DummyStoreItem(f"key{i}", {"data": f"val{i}"}, ("test",)) for i in range(5)
-        ]
+        mock_results = [DummyStoreItem(f"key{i}", {"data": f"val{i}"}, ("test",)) for i in range(5)]
         mock_store.asearch.return_value = mock_results
 
         resp = client.post(
@@ -373,9 +371,7 @@ class TestStoreIntegration:
             assert resp.status_code == 200
 
         # Mock search results
-        mock_results = [
-            DummyStoreItem(f"item-{i}", {"index": i}, ("batch",)) for i in range(3)
-        ]
+        mock_results = [DummyStoreItem(f"item-{i}", {"index": i}, ("batch",)) for i in range(3)]
         mock_store.asearch.return_value = mock_results
 
         # Search for them

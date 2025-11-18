@@ -8,9 +8,7 @@ from tests.fixtures.session_fixtures import BasicSession, override_session_depen
 from tests.fixtures.test_helpers import DummyRun, DummyThread
 
 
-def _thread_row(
-    thread_id="test-thread-123", status="idle", metadata=None, user_id="test-user"
-):
+def _thread_row(thread_id="test-thread-123", status="idle", metadata=None, user_id="test-user"):
     """Create a mock thread ORM object"""
     thread = DummyThread(thread_id, status, metadata, user_id)
 
@@ -35,15 +33,11 @@ def _thread_row(
     return thread
 
 
-def _assistant_row(
-    assistant_id="test-assistant-123", graph_id="test-graph", user_id="test-user"
-):
+def _assistant_row(assistant_id="test-assistant-123", graph_id="test-graph", user_id="test-user"):
     """Create a mock assistant ORM object"""
     from tests.fixtures.test_helpers import make_assistant
 
-    assistant = make_assistant(
-        assistant_id=assistant_id, graph_id=graph_id, user_id=user_id
-    )
+    assistant = make_assistant(assistant_id=assistant_id, graph_id=graph_id, user_id=user_id)
 
     # Add ORM-specific attributes
     assistant.graph_id = graph_id

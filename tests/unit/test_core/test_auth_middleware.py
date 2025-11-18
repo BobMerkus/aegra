@@ -105,9 +105,7 @@ class TestLangGraphAuthBackend:
 
     def test_backend_initialization(self):
         """Test backend initialization"""
-        with patch.object(
-            LangGraphAuthBackend, "_load_auth_instance", return_value=None
-        ):
+        with patch.object(LangGraphAuthBackend, "_load_auth_instance", return_value=None):
             backend = LangGraphAuthBackend()
             assert backend.auth_instance is None
 
@@ -116,9 +114,7 @@ class TestLangGraphAuthBackend:
         mock_auth_instance = Mock()
         mock_auth_instance._authenticate_handler = AsyncMock()
 
-        with patch.object(
-            LangGraphAuthBackend, "_load_auth_instance", return_value=mock_auth_instance
-        ):
+        with patch.object(LangGraphAuthBackend, "_load_auth_instance", return_value=mock_auth_instance):
             backend = LangGraphAuthBackend()
 
             assert backend.auth_instance == mock_auth_instance
@@ -282,9 +278,7 @@ class TestLangGraphAuthBackend:
     async def test_authenticate_missing_identity(self):
         """Test authentication with missing identity field"""
         mock_auth_instance = Mock()
-        mock_auth_instance._authenticate_handler = AsyncMock(
-            return_value={"display_name": "Test User"}
-        )
+        mock_auth_instance._authenticate_handler = AsyncMock(return_value={"display_name": "Test User"})
 
         backend = LangGraphAuthBackend()
         backend.auth_instance = mock_auth_instance
@@ -303,9 +297,7 @@ class TestLangGraphAuthBackend:
         # Create a mock exception with detail attribute
         mock_http_exception = Exception("Auth failed")
         mock_http_exception.detail = "Invalid token"
-        mock_auth_instance._authenticate_handler = AsyncMock(
-            side_effect=mock_http_exception
-        )
+        mock_auth_instance._authenticate_handler = AsyncMock(side_effect=mock_http_exception)
 
         backend = LangGraphAuthBackend()
         backend.auth_instance = mock_auth_instance
@@ -324,9 +316,7 @@ class TestLangGraphAuthBackend:
     async def test_authenticate_headers_conversion(self):
         """Test header conversion for different types"""
         mock_auth_instance = Mock()
-        mock_auth_instance._authenticate_handler = AsyncMock(
-            return_value={"identity": "user-123"}
-        )
+        mock_auth_instance._authenticate_handler = AsyncMock(return_value={"identity": "user-123"})
 
         backend = LangGraphAuthBackend()
         backend.auth_instance = mock_auth_instance
@@ -346,9 +336,7 @@ class TestLangGraphAuthBackend:
             "content-type": "application/json",
             "user-agent": "test-agent",
         }
-        mock_auth_instance._authenticate_handler.assert_called_once_with(
-            expected_headers
-        )
+        mock_auth_instance._authenticate_handler.assert_called_once_with(expected_headers)
 
 
 class TestGetAuthBackend:
@@ -476,9 +464,7 @@ class TestAuthMiddlewareIntegration:
         """Test authentication error handling flow"""
         # Mock auth instance that raises exception
         mock_auth_instance = Mock()
-        mock_auth_instance._authenticate_handler = AsyncMock(
-            side_effect=Exception("Invalid token")
-        )
+        mock_auth_instance._authenticate_handler = AsyncMock(side_effect=Exception("Invalid token"))
 
         backend = LangGraphAuthBackend()
         backend.auth_instance = mock_auth_instance

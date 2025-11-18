@@ -238,14 +238,10 @@ class TestAssistantServiceCreate:
     """Test assistant creation business logic"""
 
     @pytest.mark.asyncio
-    async def test_create_assistant_graph_validation_success(
-        self, assistant_service, sample_assistant_create
-    ):
+    async def test_create_assistant_graph_validation_success(self, assistant_service, sample_assistant_create):
         """Test successful graph validation"""
         # Setup mocks
-        assistant_service.langgraph_service.list_graphs.return_value = {
-            "test-graph": {}
-        }
+        assistant_service.langgraph_service.list_graphs.return_value = {"test-graph": {}}
         assistant_service.langgraph_service.get_graph.return_value = Mock()
 
         # Mock database operations
@@ -282,49 +278,31 @@ class TestAssistantServiceCreate:
 
         assistant_service.session.refresh = AsyncMock(side_effect=mock_refresh)
 
-        result = await assistant_service.create_assistant(
-            sample_assistant_create, "user-123"
-        )
+        result = await assistant_service.create_assistant(sample_assistant_create, "user-123")
 
         assert isinstance(result, Assistant)
         assistant_service.langgraph_service.list_graphs.assert_called_once()
-        assistant_service.langgraph_service.get_graph.assert_called_once_with(
-            "test-graph"
-        )
+        assistant_service.langgraph_service.get_graph.assert_called_once_with("test-graph")
 
     @pytest.mark.asyncio
-    async def test_create_assistant_graph_not_found(
-        self, assistant_service, sample_assistant_create
-    ):
+    async def test_create_assistant_graph_not_found(self, assistant_service, sample_assistant_create):
         """Test graph not found error"""
-        assistant_service.langgraph_service.list_graphs.return_value = {
-            "other-graph": {}
-        }
+        assistant_service.langgraph_service.list_graphs.return_value = {"other-graph": {}}
 
         with pytest.raises(HTTPException) as exc_info:
-            await assistant_service.create_assistant(
-                sample_assistant_create, "user-123"
-            )
+            await assistant_service.create_assistant(sample_assistant_create, "user-123")
 
         assert exc_info.value.status_code == 400
         assert "Graph 'test-graph' not found" in str(exc_info.value.detail)
 
     @pytest.mark.asyncio
-    async def test_create_assistant_graph_load_failure(
-        self, assistant_service, sample_assistant_create
-    ):
+    async def test_create_assistant_graph_load_failure(self, assistant_service, sample_assistant_create):
         """Test graph loading failure"""
-        assistant_service.langgraph_service.list_graphs.return_value = {
-            "test-graph": {}
-        }
-        assistant_service.langgraph_service.get_graph.side_effect = Exception(
-            "Graph load failed"
-        )
+        assistant_service.langgraph_service.list_graphs.return_value = {"test-graph": {}}
+        assistant_service.langgraph_service.get_graph.side_effect = Exception("Graph load failed")
 
         with pytest.raises(HTTPException) as exc_info:
-            await assistant_service.create_assistant(
-                sample_assistant_create, "user-123"
-            )
+            await assistant_service.create_assistant(sample_assistant_create, "user-123")
 
         assert exc_info.value.status_code == 400
         assert "Failed to load graph" in str(exc_info.value.detail)
@@ -338,23 +316,17 @@ class TestAssistantServiceCreate:
             context={"other_key": "other_value"},
         )
 
-        assistant_service.langgraph_service.list_graphs.return_value = {
-            "test-graph": {}
-        }
+        assistant_service.langgraph_service.list_graphs.return_value = {"test-graph": {}}
         assistant_service.langgraph_service.get_graph.return_value = Mock()
 
         with pytest.raises(HTTPException) as exc_info:
             await assistant_service.create_assistant(request, "user-123")
 
         assert exc_info.value.status_code == 400
-        assert "Cannot specify both configurable and context" in str(
-            exc_info.value.detail
-        )
+        assert "Cannot specify both configurable and context" in str(exc_info.value.detail)
 
     @pytest.mark.asyncio
-    async def test_create_assistant_config_context_sync_from_config(
-        self, assistant_service
-    ):
+    async def test_create_assistant_config_context_sync_from_config(self, assistant_service):
         """Test config to context synchronization"""
         request = AssistantCreate(
             graph_id="test-graph",
@@ -362,9 +334,7 @@ class TestAssistantServiceCreate:
             context=None,
         )
 
-        assistant_service.langgraph_service.list_graphs.return_value = {
-            "test-graph": {}
-        }
+        assistant_service.langgraph_service.list_graphs.return_value = {"test-graph": {}}
         assistant_service.langgraph_service.get_graph.return_value = Mock()
         assistant_service.session.scalar.return_value = None
         assistant_service.session.add = Mock()
@@ -392,9 +362,7 @@ class TestAssistantServiceCreate:
         assert result.context == {"key": "value"}
 
     @pytest.mark.asyncio
-    async def test_create_assistant_config_context_sync_from_context(
-        self, assistant_service
-    ):
+    async def test_create_assistant_config_context_sync_from_context(self, assistant_service):
         """Test context to config synchronization"""
         request = AssistantCreate(
             graph_id="test-graph",
@@ -402,9 +370,7 @@ class TestAssistantServiceCreate:
             context={"key": "value"},
         )
 
-        assistant_service.langgraph_service.list_graphs.return_value = {
-            "test-graph": {}
-        }
+        assistant_service.langgraph_service.list_graphs.return_value = {"test-graph": {}}
         assistant_service.langgraph_service.get_graph.return_value = Mock()
         assistant_service.session.scalar.return_value = None
         assistant_service.session.add = Mock()
@@ -432,9 +398,7 @@ class TestAssistantServiceCreate:
         assert result.config == {"configurable": {"key": "value"}}
 
     @pytest.mark.asyncio
-    async def test_create_assistant_duplicate_handling_do_nothing(
-        self, assistant_service, sample_assistant_create
-    ):
+    async def test_create_assistant_duplicate_handling_do_nothing(self, assistant_service, sample_assistant_create):
         """Test duplicate assistant handling with do_nothing policy"""
         request = AssistantCreate(
             graph_id="test-graph",
@@ -461,9 +425,7 @@ class TestAssistantServiceCreate:
         mock_table.columns = [mock_column]
         existing_assistant.__table__ = mock_table
 
-        assistant_service.langgraph_service.list_graphs.return_value = {
-            "test-graph": {}
-        }
+        assistant_service.langgraph_service.list_graphs.return_value = {"test-graph": {}}
         assistant_service.langgraph_service.get_graph.return_value = Mock()
         assistant_service.session.scalar.return_value = existing_assistant
 
@@ -473,9 +435,7 @@ class TestAssistantServiceCreate:
         assert result.name == "Existing Assistant"
 
     @pytest.mark.asyncio
-    async def test_create_assistant_duplicate_handling_error(
-        self, assistant_service, sample_assistant_create
-    ):
+    async def test_create_assistant_duplicate_handling_error(self, assistant_service, sample_assistant_create):
         """Test duplicate assistant handling with error policy"""
         request = AssistantCreate(
             graph_id="test-graph",
@@ -486,9 +446,7 @@ class TestAssistantServiceCreate:
         existing_assistant = Mock()
         existing_assistant.assistant_id = "existing-id"
 
-        assistant_service.langgraph_service.list_graphs.return_value = {
-            "test-graph": {}
-        }
+        assistant_service.langgraph_service.list_graphs.return_value = {"test-graph": {}}
         assistant_service.langgraph_service.get_graph.return_value = Mock()
         assistant_service.session.scalar.return_value = existing_assistant
 
@@ -587,9 +545,7 @@ class TestAssistantServiceUpdate:
     """Test assistant update business logic"""
 
     @pytest.mark.asyncio
-    async def test_update_assistant_success(
-        self, assistant_service, sample_assistant_update
-    ):
+    async def test_update_assistant_success(self, assistant_service, sample_assistant_update):
         """Test successful assistant update"""
         # Mock existing assistant
         mock_assistant = Mock()
@@ -626,25 +582,19 @@ class TestAssistantServiceUpdate:
         assistant_service.session.execute = AsyncMock()
         assistant_service.session.commit = AsyncMock()
 
-        result = await assistant_service.update_assistant(
-            "test-id", sample_assistant_update, "user-123"
-        )
+        result = await assistant_service.update_assistant("test-id", sample_assistant_update, "user-123")
 
         assert isinstance(result, Assistant)
         assistant_service.session.execute.assert_called_once()
         assistant_service.session.commit.assert_called()
 
     @pytest.mark.asyncio
-    async def test_update_assistant_not_found(
-        self, assistant_service, sample_assistant_update
-    ):
+    async def test_update_assistant_not_found(self, assistant_service, sample_assistant_update):
         """Test update of non-existent assistant"""
         assistant_service.session.scalar.return_value = None
 
         with pytest.raises(HTTPException) as exc_info:
-            await assistant_service.update_assistant(
-                "nonexistent", sample_assistant_update, "user-123"
-            )
+            await assistant_service.update_assistant("nonexistent", sample_assistant_update, "user-123")
 
         assert exc_info.value.status_code == 404
         assert "not found" in str(exc_info.value.detail)
@@ -661,9 +611,7 @@ class TestAssistantServiceUpdate:
             await assistant_service.update_assistant("test-id", request, "user-123")
 
         assert exc_info.value.status_code == 400
-        assert "Cannot specify both configurable and context" in str(
-            exc_info.value.detail
-        )
+        assert "Cannot specify both configurable and context" in str(exc_info.value.detail)
 
 
 class TestAssistantServiceDelete:
@@ -764,9 +712,7 @@ class TestAssistantServiceVersionManagement:
             await assistant_service.set_assistant_latest("test-id", 999, "user-123")
 
         assert exc_info.value.status_code == 404
-        assert "Version '999' for Assistant 'test-id' not found" in str(
-            exc_info.value.detail
-        )
+        assert "Version '999' for Assistant 'test-id' not found" in str(exc_info.value.detail)
 
 
 class TestAssistantServiceSearch:
@@ -882,9 +828,7 @@ class TestAssistantServiceSchemas:
         mock_assistant.__table__ = mock_table
 
         assistant_service.session.scalar.return_value = mock_assistant
-        assistant_service.langgraph_service.get_graph.side_effect = Exception(
-            "Graph load failed"
-        )
+        assistant_service.langgraph_service.get_graph.side_effect = Exception("Graph load failed")
 
         with pytest.raises(HTTPException) as exc_info:
             await assistant_service.get_assistant_schemas("test-id", "user-123")
@@ -912,18 +856,14 @@ class TestAssistantServiceGraph:
         # Mock graph
         mock_graph = Mock()
         mock_drawable_graph = Mock()
-        mock_drawable_graph.to_json.return_value = {
-            "nodes": [{"data": {"id": "node1"}}]
-        }
+        mock_drawable_graph.to_json.return_value = {"nodes": [{"data": {"id": "node1"}}]}
 
         mock_graph.aget_graph = AsyncMock(return_value=mock_drawable_graph)
 
         assistant_service.session.scalar.return_value = mock_assistant
         assistant_service.langgraph_service.get_graph.return_value = mock_graph
 
-        result = await assistant_service.get_assistant_graph(
-            "test-id", False, "user-123"
-        )
+        result = await assistant_service.get_assistant_graph("test-id", False, "user-123")
 
         assert "nodes" in result
         # Verify id was removed from node data
@@ -1017,9 +957,7 @@ class TestAssistantServiceSubgraphs:
         assistant_service.session.scalar.return_value = mock_assistant
         assistant_service.langgraph_service.get_graph.return_value = mock_graph
 
-        result = await assistant_service.get_assistant_subgraphs(
-            "test-id", "namespace1", True, "user-123"
-        )
+        result = await assistant_service.get_assistant_subgraphs("test-id", "namespace1", True, "user-123")
 
         assert "subgraph1" in result
         assert "input_schema" in result["subgraph1"]
@@ -1045,9 +983,7 @@ class TestAssistantServiceSubgraphs:
         assistant_service.langgraph_service.get_graph.return_value = mock_graph
 
         with pytest.raises(HTTPException) as exc_info:
-            await assistant_service.get_assistant_subgraphs(
-                "test-id", "namespace1", True, "user-123"
-            )
+            await assistant_service.get_assistant_subgraphs("test-id", "namespace1", True, "user-123")
 
         assert exc_info.value.status_code == 422
         assert "does not support subgraphs" in str(exc_info.value.detail)

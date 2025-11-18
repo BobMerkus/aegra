@@ -34,9 +34,7 @@ class TestGetThreadStateAtCheckpoint:
         config = {"configurable": {}}
 
         with (
-            patch(
-                "agent_server.services.langgraph_service.get_langgraph_service"
-            ) as mock_service,
+            patch("agent_server.services.langgraph_service.get_langgraph_service") as mock_service,
             patch(
                 "agent_server.services.langgraph_service.create_thread_config",
                 return_value=config,
@@ -60,9 +58,7 @@ class TestGetThreadStateAtCheckpoint:
         assert config["configurable"]["checkpoint_id"] == "checkpoint-1"
         mock_agent.aget_state.assert_awaited_once_with(config, subgraphs=True)
         # Verify subgraphs was passed to conversion service
-        mock_convert.assert_called_once_with(
-            {"values": {"foo": "bar"}}, "thread-123", subgraphs=True
-        )
+        mock_convert.assert_called_once_with({"values": {"foo": "bar"}}, "thread-123", subgraphs=True)
 
     @pytest.mark.asyncio
     async def test_success_with_checkpoint_ns(self):
@@ -82,9 +78,7 @@ class TestGetThreadStateAtCheckpoint:
         config = {"configurable": {}}
 
         with (
-            patch(
-                "agent_server.services.langgraph_service.get_langgraph_service"
-            ) as mock_service,
+            patch("agent_server.services.langgraph_service.get_langgraph_service") as mock_service,
             patch(
                 "agent_server.services.langgraph_service.create_thread_config",
                 return_value=config,
@@ -127,9 +121,7 @@ class TestGetThreadStateAtCheckpoint:
         config = {"configurable": {}}
 
         with (
-            patch(
-                "agent_server.services.langgraph_service.get_langgraph_service"
-            ) as mock_service,
+            patch("agent_server.services.langgraph_service.get_langgraph_service") as mock_service,
             patch(
                 "agent_server.services.langgraph_service.create_thread_config",
                 return_value=config,
@@ -176,9 +168,7 @@ class TestGetThreadStateAtCheckpointPost:
             "agent_server.api.threads.get_thread_state_at_checkpoint",
             return_value=mock_thread_state,
         ) as mock_get:
-            result = await get_thread_state_at_checkpoint_post(
-                "thread-123", request, user=user, session=session
-            )
+            result = await get_thread_state_at_checkpoint_post("thread-123", request, user=user, session=session)
 
         assert result is mock_thread_state
         # Verify GET endpoint was called with checkpoint_ns
@@ -210,9 +200,7 @@ class TestGetThreadStateAtCheckpointPost:
             "agent_server.api.threads.get_thread_state_at_checkpoint",
             return_value=mock_thread_state,
         ) as mock_get:
-            result = await get_thread_state_at_checkpoint_post(
-                "thread-123", request, user=user, session=session
-            )
+            result = await get_thread_state_at_checkpoint_post("thread-123", request, user=user, session=session)
 
         assert result is mock_thread_state
         # Verify GET endpoint was called with None checkpoint_ns
@@ -239,9 +227,7 @@ class TestGetThreadStateAtCheckpointPost:
         request = ThreadCheckpointPostRequest(checkpoint=checkpoint, subgraphs=False)
 
         with pytest.raises(HTTPException) as exc_info:
-            await get_thread_state_at_checkpoint_post(
-                "thread-123", request, user=user, session=session
-            )
+            await get_thread_state_at_checkpoint_post("thread-123", request, user=user, session=session)
 
         assert exc_info.value.status_code == 400
         assert "checkpoint_id is required" in exc_info.value.detail.lower()
@@ -265,9 +251,7 @@ class TestGetThreadStateAtCheckpointPost:
             "agent_server.api.threads.get_thread_state_at_checkpoint",
             return_value=mock_thread_state,
         ) as mock_get:
-            await get_thread_state_at_checkpoint_post(
-                "thread-123", request, user=user, session=session
-            )
+            await get_thread_state_at_checkpoint_post("thread-123", request, user=user, session=session)
 
         # Verify subgraphs=True was passed
         call_args = mock_get.call_args[0]

@@ -33,9 +33,7 @@ def setup_environment():
     """Set up environment variables for testing"""
     # Set database URL for development
     if not os.getenv("DATABASE_URL"):
-        os.environ["DATABASE_URL"] = (
-            "postgresql+asyncpg://user:password@localhost:5432/aegra"
-        )
+        os.environ["DATABASE_URL"] = "postgresql+asyncpg://user:password@localhost:5432/aegra"
 
     # Set auth type (can be overridden)
     if not os.getenv("AUTH_TYPE"):

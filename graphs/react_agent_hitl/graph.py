@@ -21,9 +21,7 @@ from react_agent_hitl.utils import load_chat_model
 # Define the function that calls the model
 
 
-async def call_model(
-    state: State, runtime: Runtime[Context]
-) -> dict[str, list[AIMessage]]:
+async def call_model(state: State, runtime: Runtime[Context]) -> dict[str, list[AIMessage]]:
     """Call the LLM powering our "agent".
 
     This function prepares the prompt, initializes the model, and processes the response.
@@ -39,16 +37,12 @@ async def call_model(
     model = load_chat_model(runtime.context.model).bind_tools(TOOLS)
 
     # Format the system prompt. Customize this to change the agent's behavior.
-    system_message = runtime.context.system_prompt.format(
-        system_time=datetime.now(tz=UTC).isoformat()
-    )
+    system_message = runtime.context.system_prompt.format(system_time=datetime.now(tz=UTC).isoformat())
 
     # Get the model's response
     response = cast(
         "AIMessage",
-        await model.ainvoke(
-            [{"role": "system", "content": system_message}, *state.messages]
-        ),
+        await model.ainvoke([{"role": "system", "content": system_message}, *state.messages]),
     )
 
     # Handle the case when it's the last step and the model still wants to use a tool
@@ -77,10 +71,7 @@ def _find_tool_message(messages: list) -> AIMessage | None:
 def _create_tool_cancellations(tool_calls: list, reason: str) -> list[ToolMessage]:
     """Create cancellation messages for tool calls."""
     return [
-        ToolMessage(
-            content=f"Tool execution {reason}.", tool_call_id=tc["id"], name=tc["name"]
-        )
-        for tc in tool_calls
+        ToolMessage(content=f"Tool execution {reason}.", tool_call_id=tc["id"], name=tc["name"]) for tc in tool_calls
     ]
 
 
@@ -124,9 +115,7 @@ async def human_approval(state: State) -> Command:
         {
             "action_request": {
                 "action": "tool_execution",
-                "args": {
-                    tc["name"]: tc.get("args", {}) for tc in tool_message.tool_calls
-                },
+                "args": {tc["name"]: tc.get("args", {}) for tc in tool_message.tool_calls},
             },
             "config": {
                 "allow_respond": True,
@@ -148,31 +137,17 @@ async def human_approval(state: State) -> Command:
         return Command(goto="tools")
 
     elif response_type == "response":
-        tool_responses = _create_tool_cancellations(
-            tool_message.tool_calls, "was interrupted for human input"
-        )
+        tool_responses = _create_tool_cancellations(tool_message.tool_calls, "was interrupted for human input")
         human_message = HumanMessage(content=str(response_args))
-        return Command(
-            goto="call_model", update={"messages": tool_responses + [human_message]}
-        )
+        return Command(goto="call_model", update={"messages": tool_responses + [human_message]})
 
-    elif (
-        response_type == "edit"
-        and isinstance(response_args, dict)
-        and "args" in response_args
-    ):
+    elif response_type == "edit" and isinstance(response_args, dict) and "args" in response_args:
         updated_calls = _update_tool_calls(tool_message.tool_calls, response_args)
-        updated_message = AIMessage(
-            content=tool_message.content, tool_calls=updated_calls, id=tool_message.id
-        )
+        updated_message = AIMessage(content=tool_message.content, tool_calls=updated_calls, id=tool_message.id)
         return Command(goto="tools", update={"messages": [updated_message]})
 
     else:  # ignore or invalid
-        reason = (
-            "cancelled by human operator"
-            if response_type == "ignore"
-            else "invalid format"
-        )
+        reason = "cancelled by human operator" if response_type == "ignore" else "invalid format"
         tool_responses = _create_tool_cancellations(tool_message.tool_calls, reason)
         return Command(goto=END, update={"messages": tool_responses})
 
@@ -205,9 +180,7 @@ def route_model_output(state: State) -> Literal["__end__", "human_approval"]:
     """
     last_message = state.messages[-1]
     if not isinstance(last_message, AIMessage):
-        raise ValueError(
-            f"Expected AIMessage in output edges, but got {type(last_message).__name__}"
-        )
+        raise ValueError(f"Expected AIMessage in output edges, but got {type(last_message).__name__}")
     # If there is no tool call, then we finish
     if not last_message.tool_calls:
         return "__end__"
@@ -216,9 +189,7 @@ def route_model_output(state: State) -> Literal["__end__", "human_approval"]:
 
 
 # Add conditional edges
-builder.add_conditional_edges(
-    "call_model", route_model_output, path_map=["human_approval", END]
-)
+builder.add_conditional_edges("call_model", route_model_output, path_map=["human_approval", END])
 
 
 # Add a normal edge from `tools` to `call_model`

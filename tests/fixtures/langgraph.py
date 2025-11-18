@@ -37,9 +37,7 @@ class FakeSnapshot:
         self.interrupts = tuple(interrupts) if interrupts else ()
 
 
-def make_interrupt(
-    value: str = "Provide value:", interrupt_id: str = "fake-interrupt-id"
-) -> Interrupt:
+def make_interrupt(value: str = "Provide value:", interrupt_id: str = "fake-interrupt-id") -> Interrupt:
     """Create a LangGraph interrupt instance for tests."""
 
     return Interrupt(value=value, id=interrupt_id)
@@ -134,9 +132,7 @@ class MockLangGraphService:
         raise RuntimeError("No fake agent/graph configured")
 
 
-def patch_langgraph_service(
-    agent: FakeAgent | None = None, graph: FakeGraph | None = None
-):
+def patch_langgraph_service(agent: FakeAgent | None = None, graph: FakeGraph | None = None):
     """Patch get_langgraph_service to return a mock
 
     Usage:

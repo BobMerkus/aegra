@@ -31,9 +31,7 @@ async def test_state_at_checkpoint_e2e():
     run = await client.runs.create(
         thread_id=thread_id,
         assistant_id=assistant["assistant_id"],
-        input={
-            "messages": [{"role": "human", "content": "What is the capital of France?"}]
-        },
+        input={"messages": [{"role": "human", "content": "What is the capital of France?"}]},
     )
     elog("Runs.create response", run)
     final_state = await client.runs.join(thread_id, run["run_id"])
@@ -53,9 +51,7 @@ async def test_state_at_checkpoint_e2e():
     # 5. Test GET endpoint: /threads/{thread_id}/state/{checkpoint_id}
     # The SDK's get_state(checkpoint_id=...) maps to this GET request.
     elog("Testing GET state at checkpoint endpoint", None)
-    state_get = await client.threads.get_state(
-        thread_id=thread_id, checkpoint_id=checkpoint_id
-    )
+    state_get = await client.threads.get_state(thread_id=thread_id, checkpoint_id=checkpoint_id)
     elog("GET state response", state_get)
 
     assert isinstance(state_get, dict)
@@ -65,9 +61,7 @@ async def test_state_at_checkpoint_e2e():
     assert state_get["checkpoint"]["checkpoint_id"] == checkpoint_id
     # Verify content to ensure a valid state was retrieved
     assert "messages" in state_get["values"]
-    assert any(m.get("type") == "ai" for m in state_get["values"]["messages"]), (
-        "No AI response message found in state"
-    )
+    assert any(m.get("type") == "ai" for m in state_get["values"]["messages"]), "No AI response message found in state"
 
     # 6. Test POST endpoint: /threads/{thread_id}/state/checkpoint
     # The SDK's get_state(checkpoint=...) maps to this POST request.
@@ -77,12 +71,8 @@ async def test_state_at_checkpoint_e2e():
         "checkpoint_id": checkpoint_id,
         "checkpoint_ns": checkpoint_ns,
     }
-    state_post = await client.threads.get_state(
-        thread_id=thread_id, checkpoint=checkpoint_obj
-    )
+    state_post = await client.threads.get_state(thread_id=thread_id, checkpoint=checkpoint_obj)
     elog("POST state response", state_post)
 
     assert isinstance(state_post, dict)
-    assert state_post == state_get, (
-        "State from GET and POST endpoints should be identical"
-    )
+    assert state_post == state_get, "State from GET and POST endpoints should be identical"

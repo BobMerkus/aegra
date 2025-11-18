@@ -47,9 +47,7 @@ class EventConverter:
             metadata = data.get("metadata")
             if message_chunk is None:
                 return None
-            message_data = (
-                (message_chunk, metadata) if metadata is not None else message_chunk
-            )
+            message_data = (message_chunk, metadata) if metadata is not None else message_chunk
             return create_messages_event(message_data, event_id=event_id)
         elif event_type == "values":
             return create_values_event(data.get("chunk"), event_id)
@@ -91,9 +89,7 @@ class EventConverter:
                     # Subgraphs format: (namespace, mode, chunk)
                     namespace, mode, chunk = raw_event
                     # Normalize namespace to list format
-                    if namespace is None or (
-                        isinstance(namespace, (list, tuple)) and not namespace
-                    ):
+                    if namespace is None or (isinstance(namespace, (list, tuple)) and not namespace):
                         # Handle None or empty tuple/list - no namespace prefix
                         namespace_list = None
                     elif isinstance(namespace, (list, tuple)):
@@ -160,9 +156,7 @@ class EventConverter:
         # Route to appropriate SSE creator based on base stream mode
         # Pass event_type (with namespace) to SSE creators for proper event naming
         if stream_mode == "messages" or event_type.startswith("messages"):
-            return create_messages_event(
-                payload, event_type=event_type, event_id=event_id
-            )
+            return create_messages_event(payload, event_type=event_type, event_id=event_id)
         elif stream_mode == "values" or event_type.startswith("values"):
             # For values events, we need to use format_sse_message directly to support namespaces
             from ..core.sse import format_sse_message

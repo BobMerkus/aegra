@@ -121,11 +121,7 @@ class TestAssistantServiceDatabase:
         result = await assistant_service.create_assistant(request, "user-123")
 
         # Find the created version
-        versions = [
-            obj
-            for obj in assistant_service.session.added_objects
-            if isinstance(obj, AssistantVersionORM)
-        ]
+        versions = [obj for obj in assistant_service.session.added_objects if isinstance(obj, AssistantVersionORM)]
 
         assert len(versions) == 1
         version = versions[0]
@@ -143,9 +139,7 @@ class TestAssistantServiceDatabase:
             name="Original Assistant",
             graph_id="test-graph",
         )
-        original_assistant = await assistant_service.create_assistant(
-            create_request, "user-123"
-        )
+        original_assistant = await assistant_service.create_assistant(create_request, "user-123")
 
         # Mock scalar calls: first returns assistant, second returns max version, third returns updated assistant
         assistant_service.session.scalar.side_effect = [
@@ -161,16 +155,10 @@ class TestAssistantServiceDatabase:
             config={"temperature": 0.8},
         )
 
-        await assistant_service.update_assistant(
-            original_assistant.assistant_id, update_request, "user-123"
-        )
+        await assistant_service.update_assistant(original_assistant.assistant_id, update_request, "user-123")
 
         # Verify new version was created
-        versions = [
-            obj
-            for obj in assistant_service.session.added_objects
-            if isinstance(obj, AssistantVersionORM)
-        ]
+        versions = [obj for obj in assistant_service.session.added_objects if isinstance(obj, AssistantVersionORM)]
 
         # Should have 2 versions (original + updated)
         assert len(versions) == 2
@@ -195,9 +183,7 @@ class TestAssistantServiceDatabase:
         # Mock the assistant for deletion
         assistant_service.session.scalar.return_value = assistant
 
-        result = await assistant_service.delete_assistant(
-            assistant.assistant_id, "user-123"
-        )
+        result = await assistant_service.delete_assistant(assistant.assistant_id, "user-123")
 
         assert result == {"status": "deleted"}
         assert assistant in assistant_service.session.deleted_objects
@@ -279,9 +265,7 @@ class TestAssistantServiceDatabase:
 
         assistant_service.session.scalars.return_value = mock_result
 
-        result = await assistant_service.list_assistant_versions(
-            assistant.assistant_id, "user-123"
-        )
+        result = await assistant_service.list_assistant_versions(assistant.assistant_id, "user-123")
 
         assert isinstance(result, list)
         assert len(result) == 2
@@ -319,9 +303,7 @@ class TestAssistantServiceDatabase:
             assistant,
         ]
 
-        result = await assistant_service.set_assistant_latest(
-            assistant.assistant_id, 2, "user-123"
-        )
+        result = await assistant_service.set_assistant_latest(assistant.assistant_id, 2, "user-123")
 
         assert isinstance(result, Assistant)
         # Verify update was executed
@@ -429,13 +411,9 @@ class TestAssistantServiceDatabase:
         )
 
         # Mock LangGraph service failure
-        assistant_service.langgraph_service.get_graph.side_effect = Exception(
-            "Graph load failed"
-        )
+        assistant_service.langgraph_service.get_graph.side_effect = Exception("Graph load failed")
 
-        with pytest.raises(
-            HTTPException, match="Failed to load graph: Graph load failed"
-        ):
+        with pytest.raises(HTTPException, match="Failed to load graph: Graph load failed"):
             await assistant_service.create_assistant(request, "user-123")
 
         # Verify no objects were added to session

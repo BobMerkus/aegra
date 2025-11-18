@@ -85,9 +85,7 @@ def upgrade() -> None:
     op.create_table(
         "thread",
         sa.Column("thread_id", sa.Text(), nullable=False),
-        sa.Column(
-            "status", sa.Text(), server_default=sa.text("'idle'"), nullable=False
-        ),
+        sa.Column("status", sa.Text(), server_default=sa.text("'idle'"), nullable=False),
         sa.Column(
             "metadata_json",
             postgresql.JSONB(astext_type=sa.Text()),
@@ -121,9 +119,7 @@ def upgrade() -> None:
         ),
         sa.Column("thread_id", sa.Text(), nullable=False),
         sa.Column("assistant_id", sa.Text(), nullable=True),
-        sa.Column(
-            "status", sa.Text(), server_default=sa.text("'pending'"), nullable=False
-        ),
+        sa.Column("status", sa.Text(), server_default=sa.text("'pending'"), nullable=False),
         sa.Column(
             "input",
             postgresql.JSONB(astext_type=sa.Text()),
@@ -154,9 +150,7 @@ def upgrade() -> None:
     # Create indexes for performance optimization
     # Assistant indexes
     op.create_index("idx_assistant_user", "assistant", ["user_id"])
-    op.create_index(
-        "idx_assistant_user_graph", "assistant", ["user_id", "graph_id"], unique=True
-    )
+    op.create_index("idx_assistant_user_graph", "assistant", ["user_id", "graph_id"], unique=True)
 
     # Run events indexes
     op.create_index("idx_run_events_run_id", "run_events", ["run_id"])

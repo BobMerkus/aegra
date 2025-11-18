@@ -23,9 +23,7 @@ class StreamingService:
         self.event_counters: dict[str, int] = {}
         self.event_converter = EventConverter()
 
-    def _process_interrupt_updates(
-        self, raw_event: Any, only_interrupt_updates: bool
-    ) -> tuple[Any, bool]:
+    def _process_interrupt_updates(self, raw_event: Any, only_interrupt_updates: bool) -> tuple[Any, bool]:
         """
         Process interrupt updates logic - returns (processed_event, should_skip).
 
@@ -50,11 +48,7 @@ class StreamingService:
         # Handle updates events
         if mode == "updates" and only_interrupt_updates:
             # Check if this is an interrupt update
-            if (
-                isinstance(chunk, dict)
-                and "__interrupt__" in chunk
-                and len(chunk.get("__interrupt__", [])) > 0
-            ):
+            if isinstance(chunk, dict) and "__interrupt__" in chunk and len(chunk.get("__interrupt__", [])) > 0:
                 # Convert interrupt updates to values events
                 if namespace is not None:
                     return (namespace, "values", chunk), False
@@ -90,9 +84,7 @@ class StreamingService:
         broker = broker_manager.get_or_create_broker(run_id)
         self._next_event_counter(run_id, event_id)
 
-        processed_event, should_skip = self._process_interrupt_updates(
-            raw_event, only_interrupt_updates
-        )
+        processed_event, should_skip = self._process_interrupt_updates(raw_event, only_interrupt_updates)
         if should_skip:
             return
 
@@ -106,9 +98,7 @@ class StreamingService:
         only_interrupt_updates: bool = False,
     ):
         """Convert raw event to stored format and store it"""
-        processed_event, should_skip = self._process_interrupt_updates(
-            raw_event, only_interrupt_updates
-        )
+        processed_event, should_skip = self._process_interrupt_updates(raw_event, only_interrupt_updates)
         if should_skip:
             return
 
@@ -183,9 +173,7 @@ class StreamingService:
 
         broker = broker_manager.get_or_create_broker(run_id)
         if broker:
-            await broker.put(
-                event_id, ("end", {"status": "error", "error": error_message})
-            )
+            await broker.put(event_id, ("end", {"status": "error", "error": error_message}))
 
         broker_manager.cleanup_broker(run_id)
 
@@ -229,9 +217,7 @@ class StreamingService:
             logger.error(f"Error in stream_run_execution for run {run_id}: {e}")
             yield create_error_event(str(e))
 
-    async def _replay_stored_events(
-        self, run_id: str, last_event_id: str | None
-    ) -> AsyncIterator[str]:
+    async def _replay_stored_events(self, run_id: str, last_event_id: str | None) -> AsyncIterator[str]:
         """Replay stored events"""
         if last_event_id:
             stored_events = await event_store.get_events_since(run_id, last_event_id)
@@ -243,9 +229,7 @@ class StreamingService:
             if sse_event:
                 yield sse_event
 
-    async def _stream_live_events(
-        self, run: Run, last_sent_sequence: int
-    ) -> AsyncIterator[str]:
+    async def _stream_live_events(self, run: Run, last_sent_sequence: int) -> AsyncIterator[str]:
         """Stream live events from broker"""
         run_id = run.run_id
         broker = broker_manager.get_or_create_broker(run_id)
@@ -276,9 +260,7 @@ class StreamingService:
             if task and not task.done():
                 task.cancel()
         except Exception as e:
-            logger.warning(
-                f"Failed to cancel background task for run {run_id} on disconnect: {e}"
-            )
+            logger.warning(f"Failed to cancel background task for run {run_id} on disconnect: {e}")
 
     async def _convert_raw_to_sse(self, event_id: str, raw_event: Any) -> str | None:
         """Convert a raw event from broker to SSE format"""
@@ -304,9 +286,7 @@ class StreamingService:
             logger.error(f"Error cancelling run {run_id}: {e}")
             return False
 
-    async def _update_run_status(
-        self, run_id: str, status: str, output: Any = None, error: str = None
-    ):
+    async def _update_run_status(self, run_id: str, status: str, output: Any = None, error: str = None):
         """Update run status in database using the shared updater."""
         try:
             # Lazy import to avoid cycles

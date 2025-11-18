@@ -19,9 +19,7 @@ from react_agent.utils import load_chat_model
 # Define the function that calls the model
 
 
-async def call_model(
-    state: State, runtime: Runtime[Context]
-) -> dict[str, list[AIMessage]]:
+async def call_model(state: State, runtime: Runtime[Context]) -> dict[str, list[AIMessage]]:
     """Call the LLM powering our "agent".
 
     This function prepares the prompt, initializes the model, and processes the response.
@@ -37,16 +35,12 @@ async def call_model(
     model = load_chat_model(runtime.context.model).bind_tools(TOOLS)
 
     # Format the system prompt. Customize this to change the agent's behavior.
-    system_message = runtime.context.system_prompt.format(
-        system_time=datetime.now(tz=UTC).isoformat()
-    )
+    system_message = runtime.context.system_prompt.format(system_time=datetime.now(tz=UTC).isoformat())
 
     # Get the model's response
     response = cast(
         "AIMessage",
-        await model.ainvoke(
-            [{"role": "system", "content": system_message}, *state.messages]
-        ),
+        await model.ainvoke([{"role": "system", "content": system_message}, *state.messages]),
     )
 
     # Handle the case when it's the last step and the model still wants to use a tool
@@ -90,9 +84,7 @@ def route_model_output(state: State) -> Literal["__end__", "tools"]:
     """
     last_message = state.messages[-1]
     if not isinstance(last_message, AIMessage):
-        raise ValueError(
-            f"Expected AIMessage in output edges, but got {type(last_message).__name__}"
-        )
+        raise ValueError(f"Expected AIMessage in output edges, but got {type(last_message).__name__}")
     # If there is no tool call, then we finish
     if not last_message.tool_calls:
         return "__end__"

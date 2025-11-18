@@ -13,9 +13,7 @@ class GeneralSerializer(Serializer):
         try:
             return self._serialize_object(obj)
         except Exception as e:
-            raise SerializationError(
-                f"Failed to serialize object: {str(e)}", obj.__class__.__name__, e
-            ) from e
+            raise SerializationError(f"Failed to serialize object: {str(e)}", obj.__class__.__name__, e) from e
 
     def _serialize_object(self, obj: Any) -> Any:
         """Core serialization logic based on LangGraph SDK's _orjson_default"""
@@ -28,11 +26,7 @@ class GeneralSerializer(Serializer):
             return obj.dict()
 
         # Handle LangGraph Interrupt objects (they don't have .dict() method)
-        elif (
-            obj.__class__.__name__ == "Interrupt"
-            and hasattr(obj, "value")
-            and hasattr(obj, "id")
-        ):
+        elif obj.__class__.__name__ == "Interrupt" and hasattr(obj, "value") and hasattr(obj, "id"):
             return {"value": self._serialize_object(obj.value), "id": obj.id}
 
         # Handle NamedTuples (like PregelTask) - they have _asdict() method

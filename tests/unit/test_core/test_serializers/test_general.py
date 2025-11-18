@@ -281,9 +281,7 @@ class TestLangGraphSerializer:
 
     def test_serialize_task_with_id_and_name(self):
         """Test serialization of proper task object"""
-        task = MockTask(
-            task_id="task-123", name="test_task", error=None, result={"data": "value"}
-        )
+        task = MockTask(task_id="task-123", name="test_task", error=None, result={"data": "value"})
         result = self.serializer.serialize_task(task)
 
         assert result["id"] == "task-123"
@@ -296,9 +294,7 @@ class TestLangGraphSerializer:
 
     def test_serialize_task_with_error(self):
         """Test serialization of task with error"""
-        task = MockTask(
-            task_id="task-456", name="failed_task", error="Something went wrong"
-        )
+        task = MockTask(task_id="task-456", name="failed_task", error="Something went wrong")
         result = self.serializer.serialize_task(task)
 
         assert result["id"] == "task-456"

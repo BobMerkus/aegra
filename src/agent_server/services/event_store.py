@@ -83,10 +83,7 @@ class EventStore:
                 {"run_id": run_id, "last_seq": last_seq},
             )
             rows = rs.fetchall()
-        return [
-            SSEEvent(id=r.id, event=r.event, data=r.data, timestamp=r.created_at)
-            for r in rows
-        ]
+        return [SSEEvent(id=r.id, event=r.event, data=r.data, timestamp=r.created_at) for r in rows]
 
     async def get_all_events(self, run_id: str) -> list[SSEEvent]:
         engine = db_manager.get_engine()
@@ -103,10 +100,7 @@ class EventStore:
                 {"run_id": run_id},
             )
             rows = rs.fetchall()
-        return [
-            SSEEvent(id=r.id, event=r.event, data=r.data, timestamp=r.created_at)
-            for r in rows
-        ]
+        return [SSEEvent(id=r.id, event=r.event, data=r.data, timestamp=r.created_at) for r in rows]
 
     async def cleanup_events(self, run_id: str) -> None:
         engine = db_manager.get_engine()
@@ -147,9 +141,7 @@ class EventStore:
             last = rs2.fetchone()
         return {
             "run_id": run_id,
-            "event_count": int(row.last_seq) - int(row.first_seq) + 1
-            if row.first_seq is not None
-            else 0,
+            "event_count": int(row.last_seq) - int(row.first_seq) + 1 if row.first_seq is not None else 0,
             "first_event_time": None,
             "last_event_time": last.created_at if last else None,
             "last_event_id": last.id if last else None,
@@ -169,20 +161,14 @@ class EventStore:
         # Retain events for 1 hour by default
         engine = db_manager.get_engine()
         async with engine.begin() as conn:
-            await conn.execute(
-                text(
-                    "DELETE FROM run_events WHERE created_at < NOW() - INTERVAL '1 hour'"
-                )
-            )
+            await conn.execute(text("DELETE FROM run_events WHERE created_at < NOW() - INTERVAL '1 hour'"))
 
 
 # Global event store instance
 event_store = EventStore()
 
 
-async def store_sse_event(
-    run_id: str, event_id: str, event_type: str, data: dict
-) -> SSEEvent:
+async def store_sse_event(run_id: str, event_id: str, event_type: str, data: dict) -> SSEEvent:
     """Store SSE event with proper serialization"""
     serializer = GeneralSerializer()
 
@@ -192,8 +178,6 @@ async def store_sse_event(
     except Exception:
         # Fallback to stringifying as a last resort to avoid crashing the run
         safe_data = {"raw": str(data)}
-    event = SSEEvent(
-        id=event_id, event=event_type, data=safe_data, timestamp=datetime.now(UTC)
-    )
+    event = SSEEvent(id=event_id, event=event_type, data=safe_data, timestamp=datetime.now(UTC))
     await event_store.store_event(run_id, event)
     return event

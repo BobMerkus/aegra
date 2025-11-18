@@ -70,11 +70,7 @@ class TestGetTracingCallbacks:
 
         with patch.dict(
             "sys.modules",
-            {
-                "langfuse.langchain": MagicMock(
-                    CallbackHandler=mock_callback_handler_class
-                )
-            },
+            {"langfuse.langchain": MagicMock(CallbackHandler=mock_callback_handler_class)},
         ):
             langfuse_module = reload_langfuse_module()
             callbacks = langfuse_module.get_tracing_callbacks()
@@ -91,11 +87,7 @@ class TestGetTracingCallbacks:
 
         with patch.dict(
             "sys.modules",
-            {
-                "langfuse.langchain": MagicMock(
-                    CallbackHandler=mock_callback_handler_class
-                )
-            },
+            {"langfuse.langchain": MagicMock(CallbackHandler=mock_callback_handler_class)},
         ):
             langfuse_module = reload_langfuse_module()
             callbacks = langfuse_module.get_tracing_callbacks()
@@ -112,11 +104,7 @@ class TestGetTracingCallbacks:
 
         with patch.dict(
             "sys.modules",
-            {
-                "langfuse.langchain": MagicMock(
-                    CallbackHandler=mock_callback_handler_class
-                )
-            },
+            {"langfuse.langchain": MagicMock(CallbackHandler=mock_callback_handler_class)},
         ):
             langfuse_module = reload_langfuse_module()
             callbacks = langfuse_module.get_tracing_callbacks()
@@ -137,8 +125,7 @@ class TestGetTracingCallbacks:
 
             assert callbacks == []
             assert any(
-                "LANGFUSE_LOGGING is true, but 'langfuse' is not installed"
-                in record.message
+                "LANGFUSE_LOGGING is true, but 'langfuse' is not installed" in record.message
                 for record in caplog.records
             )
 
@@ -146,18 +133,12 @@ class TestGetTracingCallbacks:
         """Test handling of generic exceptions during handler initialization"""
         monkeypatch.setenv("LANGFUSE_LOGGING", "true")
 
-        mock_callback_handler_class = MagicMock(
-            side_effect=Exception("Connection error")
-        )
+        mock_callback_handler_class = MagicMock(side_effect=Exception("Connection error"))
 
         with (
             patch.dict(
                 "sys.modules",
-                {
-                    "langfuse.langchain": MagicMock(
-                        CallbackHandler=mock_callback_handler_class
-                    )
-                },
+                {"langfuse.langchain": MagicMock(CallbackHandler=mock_callback_handler_class)},
             ),
             caplog.at_level(logging.ERROR),
         ):
@@ -165,13 +146,8 @@ class TestGetTracingCallbacks:
             callbacks = langfuse_module.get_tracing_callbacks()
 
             assert callbacks == []
-            assert any(
-                "Failed to initialize Langfuse CallbackHandler" in record.message
-                for record in caplog.records
-            )
-            assert any(
-                "Connection error" in record.message for record in caplog.records
-            )
+            assert any("Failed to initialize Langfuse CallbackHandler" in record.message for record in caplog.records)
+            assert any("Connection error" in record.message for record in caplog.records)
 
     def test_handler_is_stateless(self, monkeypatch):
         """Test that handler is created without state (stateless pattern)"""
@@ -200,21 +176,14 @@ class TestGetTracingCallbacks:
         with (
             patch.dict(
                 "sys.modules",
-                {
-                    "langfuse.langchain": MagicMock(
-                        CallbackHandler=mock_callback_handler_class
-                    )
-                },
+                {"langfuse.langchain": MagicMock(CallbackHandler=mock_callback_handler_class)},
             ),
             caplog.at_level(logging.INFO),
         ):
             langfuse_module = reload_langfuse_module()
             langfuse_module.get_tracing_callbacks()
 
-            assert any(
-                "Langfuse tracing enabled, handler created" in record.message
-                for record in caplog.records
-            )
+            assert any("Langfuse tracing enabled, handler created" in record.message for record in caplog.records)
 
     def test_multiple_calls_return_same_handlers(self, monkeypatch):
         """Test that multiple calls to get_tracing_callbacks return the same handler instances"""
@@ -225,11 +194,7 @@ class TestGetTracingCallbacks:
 
         with patch.dict(
             "sys.modules",
-            {
-                "langfuse.langchain": MagicMock(
-                    CallbackHandler=mock_callback_handler_class
-                )
-            },
+            {"langfuse.langchain": MagicMock(CallbackHandler=mock_callback_handler_class)},
         ):
             langfuse_module = reload_langfuse_module()
 
@@ -250,11 +215,7 @@ class TestGetTracingCallbacks:
 
         with patch.dict(
             "sys.modules",
-            {
-                "langfuse.langchain": MagicMock(
-                    CallbackHandler=mock_callback_handler_class
-                )
-            },
+            {"langfuse.langchain": MagicMock(CallbackHandler=mock_callback_handler_class)},
         ):
             langfuse_module = reload_langfuse_module()
             callbacks = langfuse_module.get_tracing_callbacks()
@@ -297,11 +258,7 @@ class TestGetTracingCallbacks:
 
         with patch.dict(
             "sys.modules",
-            {
-                "langfuse.langchain": MagicMock(
-                    CallbackHandler=mock_callback_handler_class
-                )
-            },
+            {"langfuse.langchain": MagicMock(CallbackHandler=mock_callback_handler_class)},
         ):
             langfuse_module = reload_langfuse_module()
             callbacks = langfuse_module.get_tracing_callbacks()
@@ -328,11 +285,7 @@ class TestGetTracingCallbacks:
 
             with patch.dict(
                 "sys.modules",
-                {
-                    "langfuse.langchain": MagicMock(
-                        CallbackHandler=mock_callback_handler_class
-                    )
-                },
+                {"langfuse.langchain": MagicMock(CallbackHandler=mock_callback_handler_class)},
             ):
                 langfuse_module = reload_langfuse_module()
                 callbacks = langfuse_module.get_tracing_callbacks()
@@ -421,11 +374,7 @@ class TestLangfuseProvider:
 
         with patch.dict(
             "sys.modules",
-            {
-                "langfuse.langchain": MagicMock(
-                    CallbackHandler=mock_callback_handler_class
-                )
-            },
+            {"langfuse.langchain": MagicMock(CallbackHandler=mock_callback_handler_class)},
         ):
             langfuse_module = reload_langfuse_module()
             provider = langfuse_module.LangfuseProvider()

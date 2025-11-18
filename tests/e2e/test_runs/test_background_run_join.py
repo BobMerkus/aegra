@@ -60,9 +60,7 @@ async def test_background_run_and_join_e2e():
         stream_mode=["messages-tuple", "values"],  # accept alias, normalized on server
     ):
         event_count += 1
-        first_session_counters[chunk.event] = (
-            first_session_counters.get(chunk.event, 0) + 1
-        )
+        first_session_counters[chunk.event] = first_session_counters.get(chunk.event, 0) + 1
 
         # Print/accumulate message content as it streams
         if (
@@ -114,18 +112,11 @@ async def test_background_run_and_join_e2e():
         last_event_id=last_event_id,
     ):
         rejoin_event_count += 1
-        second_session_counters[chunk.event] = (
-            second_session_counters.get(chunk.event, 0) + 1
-        )
+        second_session_counters[chunk.event] = second_session_counters.get(chunk.event, 0) + 1
 
         if chunk.event == "messages":
             rejoin_message_count += 1
-            if (
-                hasattr(chunk, "data")
-                and chunk.data
-                and isinstance(chunk.data, list)
-                and len(chunk.data) >= 1
-            ):
+            if hasattr(chunk, "data") and chunk.data and isinstance(chunk.data, list) and len(chunk.data) >= 1:
                 message_chunk = chunk.data[0]
                 content = getattr(message_chunk, "content", None)
                 if content is None and isinstance(message_chunk, dict):

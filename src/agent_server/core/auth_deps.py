@@ -75,9 +75,7 @@ def require_permission(permission: str):
 
     def permission_dependency(user: User = Depends(get_current_user)) -> User:
         if permission not in user.permissions:
-            raise HTTPException(
-                status_code=403, detail=f"Permission '{permission}' required"
-            )
+            raise HTTPException(status_code=403, detail=f"Permission '{permission}' required")
         return user
 
     return permission_dependency

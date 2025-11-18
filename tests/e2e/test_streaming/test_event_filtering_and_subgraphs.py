@@ -48,9 +48,7 @@ def _get_langgraph_node(chunk: Any) -> str:
 def _count_langgraph_nodes(langgraph_node_counts: dict, chunk: Any):
     langgraph_node = _get_langgraph_node(chunk)
     if langgraph_node:
-        langgraph_node_counts[langgraph_node] = (
-            langgraph_node_counts.get(langgraph_node, 0) + 1
-        )
+        langgraph_node_counts[langgraph_node] = langgraph_node_counts.get(langgraph_node, 0) + 1
 
     event_type = getattr(chunk, "event", None)
 
@@ -115,9 +113,7 @@ async def test_langsmith_nostream_event_filtering_e2e():
             break
 
     # There should be no messages events from no_stream node.
-    assert langgraph_node_counts.get("no_stream", 0) == 0, (
-        "Should not receive any events from no_stream node"
-    )
+    assert langgraph_node_counts.get("no_stream", 0) == 0, "Should not receive any events from no_stream node"
 
     # Validate that streaming produced events from subgraph_agent node.
     # We're expecting "subgraph_agent" node, not "call_model" node since we're not streaming subgraphs.
@@ -187,9 +183,7 @@ async def test_subgraphs_streaming_parameter_e2e():
 
     # Validate streaming produced events from call_model node.
     # We're expecting "call_model" node, not "subgraph_agent" node since we're streaming subgraphs.
-    assert langgraph_node_counts.get("call_model", 0) > 0, (
-        "Should receive events from streaming"
-    )
+    assert langgraph_node_counts.get("call_model", 0) > 0, "Should receive events from streaming"
 
     elog(
         "Subgraphs streaming test completed",

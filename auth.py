@@ -36,9 +36,7 @@ if AUTH_TYPE == "noop":
         }
 
     @auth.on
-    async def authorize(
-        ctx: Auth.types.AuthContext, value: dict[str, Any]
-    ) -> dict[str, Any]:
+    async def authorize(ctx: Auth.types.AuthContext, value: dict[str, Any]) -> dict[str, Any]:
         """No-op authorization that allows access to all resources."""
         _ = ctx, value  # Suppress unused warnings
         return {}  # Empty filter = no access restrictions
@@ -67,9 +65,7 @@ elif AUTH_TYPE == "custom":
 
         if not authorization:
             logger.warning("Missing Authorization header")
-            raise Auth.exceptions.HTTPException(
-                status_code=401, detail="Authorization header required"
-            )
+            raise Auth.exceptions.HTTPException(status_code=401, detail="Authorization header required")
 
         # Development token for testing
         if authorization == "Bearer dev-token":
@@ -86,9 +82,7 @@ elif AUTH_TYPE == "custom":
         if authorization.startswith("Bearer "):
             # TODO: Replace with your auth service integration
             logger.warning("Invalid token")
-            raise Auth.exceptions.HTTPException(
-                status_code=401, detail="Invalid authentication token"
-            )
+            raise Auth.exceptions.HTTPException(status_code=401, detail="Invalid authentication token")
 
         # Reject requests without proper format
         raise Auth.exceptions.HTTPException(
@@ -97,9 +91,7 @@ elif AUTH_TYPE == "custom":
         )
 
     @auth.on
-    async def authorize(
-        ctx: Auth.types.AuthContext, value: dict[str, Any]
-    ) -> dict[str, Any]:
+    async def authorize(ctx: Auth.types.AuthContext, value: dict[str, Any]) -> dict[str, Any]:
         """
         Multi-tenant authorization with user-scoped access control.
         """
@@ -109,9 +101,7 @@ elif AUTH_TYPE == "custom":
 
             if not user_id:
                 logger.error("Missing user identity in auth context")
-                raise Auth.exceptions.HTTPException(
-                    status_code=401, detail="Invalid user identity"
-                )
+                raise Auth.exceptions.HTTPException(status_code=401, detail="Invalid user identity")
 
             # Create owner filter for resource access control
             owner_filter = {"owner": user_id}
@@ -127,11 +117,7 @@ elif AUTH_TYPE == "custom":
             raise
         except Exception as e:
             logger.error(f"Authorization error: {e}", exc_info=True)
-            raise Auth.exceptions.HTTPException(
-                status_code=500, detail="Authorization system error"
-            ) from e
+            raise Auth.exceptions.HTTPException(status_code=500, detail="Authorization system error") from e
 
 else:
-    raise ValueError(
-        f"Unknown AUTH_TYPE: {AUTH_TYPE}. Supported values: 'noop', 'custom'"
-    )
+    raise ValueError(f"Unknown AUTH_TYPE: {AUTH_TYPE}. Supported values: 'noop', 'custom'")

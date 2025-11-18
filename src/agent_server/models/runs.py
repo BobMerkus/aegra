@@ -28,9 +28,7 @@ class RunCreate(BaseModel):
         description="Checkpoint configuration (e.g., {'checkpoint_id': '...', 'checkpoint_ns': ''})",
     )
     stream: bool = Field(False, description="Enable streaming response")
-    stream_mode: str | list[str] | None = Field(
-        None, description="Requested stream mode(s)"
-    )
+    stream_mode: str | list[str] | None = Field(None, description="Requested stream mode(s)")
     on_disconnect: str | None = Field(
         None,
         description="Behavior on client disconnect: 'cancel' or 'continue' (default).",
@@ -70,9 +68,7 @@ class RunCreate(BaseModel):
             if self.input == {}:
                 self.input = None
             else:
-                raise ValueError(
-                    "Cannot specify both 'input' and 'command' - they are mutually exclusive"
-                )
+                raise ValueError("Cannot specify both 'input' and 'command' - they are mutually exclusive")
         if self.input is None and self.command is None:
             raise ValueError("Must specify either 'input' or 'command'")
         return self

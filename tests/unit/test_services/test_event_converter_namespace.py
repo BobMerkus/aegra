@@ -73,9 +73,7 @@ class TestEventConverterNamespace:
     def test_create_sse_event_with_namespace_prefix(self):
         """Test creating SSE event with namespace prefix"""
         self.converter.set_subgraphs(True)
-        result = self.converter._create_sse_event(
-            "messages", {"content": "hello"}, "evt-1", ["subagent"]
-        )
+        result = self.converter._create_sse_event("messages", {"content": "hello"}, "evt-1", ["subagent"])
 
         assert "event: messages|subagent\n" in result
         assert "hello" in result
@@ -83,9 +81,7 @@ class TestEventConverterNamespace:
     def test_create_sse_event_with_multiple_namespace_levels(self):
         """Test creating SSE event with multiple namespace levels"""
         self.converter.set_subgraphs(True)
-        result = self.converter._create_sse_event(
-            "values", {"data": "test"}, "evt-1", ["agent1", "agent2"]
-        )
+        result = self.converter._create_sse_event("values", {"data": "test"}, "evt-1", ["agent1", "agent2"])
 
         assert "event: values|agent1|agent2\n" in result
         assert "test" in result
@@ -93,9 +89,7 @@ class TestEventConverterNamespace:
     def test_create_sse_event_without_namespace(self):
         """Test creating SSE event without namespace (no prefix)"""
         self.converter.set_subgraphs(True)
-        result = self.converter._create_sse_event(
-            "messages", {"content": "hello"}, "evt-1", None
-        )
+        result = self.converter._create_sse_event("messages", {"content": "hello"}, "evt-1", None)
 
         assert "event: messages\n" in result
         assert "messages|" not in result
@@ -103,9 +97,7 @@ class TestEventConverterNamespace:
     def test_create_sse_event_namespace_disabled(self):
         """Test that namespace prefixing is disabled when subgraphs=False"""
         self.converter.set_subgraphs(False)
-        result = self.converter._create_sse_event(
-            "messages", {"content": "hello"}, "evt-1", ["subagent"]
-        )
+        result = self.converter._create_sse_event("messages", {"content": "hello"}, "evt-1", ["subagent"])
 
         assert "event: messages\n" in result
         assert "messages|subagent" not in result
@@ -113,9 +105,7 @@ class TestEventConverterNamespace:
     def test_create_sse_event_values_with_namespace(self):
         """Test creating values event with namespace"""
         self.converter.set_subgraphs(True)
-        result = self.converter._create_sse_event(
-            "values", {"state": "data"}, "evt-1", ["subagent"]
-        )
+        result = self.converter._create_sse_event("values", {"state": "data"}, "evt-1", ["subagent"])
 
         assert "event: values|subagent\n" in result
         assert "state" in result
@@ -124,9 +114,7 @@ class TestEventConverterNamespace:
         """Test that interrupt updates converted to values preserve namespace"""
         self.converter.set_subgraphs(True)
         payload = {"__interrupt__": [{"node": "test"}]}
-        result = self.converter._create_sse_event(
-            "updates", payload, "evt-1", ["subagent"]
-        )
+        result = self.converter._create_sse_event("updates", payload, "evt-1", ["subagent"])
 
         assert "event: values|subagent\n" in result
         assert "__interrupt__" in result

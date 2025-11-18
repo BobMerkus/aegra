@@ -76,10 +76,7 @@ async def test_latest_state_human_in_loop_interrupt_e2e():
     history = await client.threads.get_history(thread_id)
     assert history, "Expected history entries for interrupted run"
     recent_checkpoint = history[0]["checkpoint"]
-    assert (
-        latest_state["checkpoint"]["checkpoint_id"]
-        == recent_checkpoint["checkpoint_id"]
-    )
+    assert latest_state["checkpoint"]["checkpoint_id"] == recent_checkpoint["checkpoint_id"]
     interrupts = latest_state.get("interrupts", [])
     assert interrupts, "Interrupts should be present for interrupted run"
 
@@ -122,10 +119,9 @@ async def test_latest_state_with_subgraphs_e2e():
         "Expected subgraph state to be included in the response"
     )
 
-    assert (
-        state_with_subgraphs["tasks"][0]["state"]["values"]["foo"]
-        == "Initial subgraph value."
-    ), "Expected subgraph state to be included and correct"
+    assert state_with_subgraphs["tasks"][0]["state"]["values"]["foo"] == "Initial subgraph value.", (
+        "Expected subgraph state to be included and correct"
+    )
 
     await client.runs.wait(
         thread_id=thread_id,

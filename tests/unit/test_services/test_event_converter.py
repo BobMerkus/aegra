@@ -62,9 +62,7 @@ class TestEventConverter:
 
     def test_create_sse_event_messages(self):
         """Test creating messages SSE event"""
-        result = self.converter._create_sse_event(
-            "messages", {"content": "hello"}, "evt-1", None
-        )
+        result = self.converter._create_sse_event("messages", {"content": "hello"}, "evt-1", None)
 
         assert "event: messages\n" in result
         assert "hello" in result
@@ -72,26 +70,20 @@ class TestEventConverter:
     def test_create_sse_event_messages_with_namespace(self):
         """Test creating messages SSE event with namespace prefix"""
         self.converter.set_subgraphs(True)
-        result = self.converter._create_sse_event(
-            "messages", {"content": "hello"}, "evt-1", ["subagent"]
-        )
+        result = self.converter._create_sse_event("messages", {"content": "hello"}, "evt-1", ["subagent"])
 
         assert "event: messages|subagent\n" in result
         assert "hello" in result
 
     def test_create_sse_event_values(self):
         """Test creating values SSE event"""
-        result = self.converter._create_sse_event(
-            "values", {"state": "data"}, "evt-1", None
-        )
+        result = self.converter._create_sse_event("values", {"state": "data"}, "evt-1", None)
 
         assert "event: values\n" in result
 
     def test_create_sse_event_updates(self):
         """Test creating updates SSE event"""
-        result = self.converter._create_sse_event(
-            "updates", {"node": "agent"}, "evt-1", None
-        )
+        result = self.converter._create_sse_event("updates", {"node": "agent"}, "evt-1", None)
 
         assert "event: updates\n" in result
 
@@ -105,17 +97,13 @@ class TestEventConverter:
 
     def test_create_sse_event_state(self):
         """Test creating state SSE event"""
-        result = self.converter._create_sse_event(
-            "state", {"values": {}}, "evt-1", None
-        )
+        result = self.converter._create_sse_event("state", {"values": {}}, "evt-1", None)
 
         assert "event: state\n" in result
 
     def test_create_sse_event_logs(self):
         """Test creating logs SSE event"""
-        result = self.converter._create_sse_event(
-            "logs", {"level": "info"}, "evt-1", None
-        )
+        result = self.converter._create_sse_event("logs", {"level": "info"}, "evt-1", None)
 
         assert "event: logs\n" in result
 
@@ -127,41 +115,31 @@ class TestEventConverter:
 
     def test_create_sse_event_subgraphs(self):
         """Test creating subgraphs SSE event"""
-        result = self.converter._create_sse_event(
-            "subgraphs", {"id": "sg-1"}, "evt-1", None
-        )
+        result = self.converter._create_sse_event("subgraphs", {"id": "sg-1"}, "evt-1", None)
 
         assert "event: subgraphs\n" in result
 
     def test_create_sse_event_debug(self):
         """Test creating debug SSE event"""
-        result = self.converter._create_sse_event(
-            "debug", {"type": "test"}, "evt-1", None
-        )
+        result = self.converter._create_sse_event("debug", {"type": "test"}, "evt-1", None)
 
         assert "event: debug\n" in result
 
     def test_create_sse_event_events(self):
         """Test creating events SSE event"""
-        result = self.converter._create_sse_event(
-            "events", {"event": "test"}, "evt-1", None
-        )
+        result = self.converter._create_sse_event("events", {"event": "test"}, "evt-1", None)
 
         assert "event: events\n" in result
 
     def test_create_sse_event_checkpoints(self):
         """Test creating checkpoints SSE event"""
-        result = self.converter._create_sse_event(
-            "checkpoints", {"cp": "1"}, "evt-1", None
-        )
+        result = self.converter._create_sse_event("checkpoints", {"cp": "1"}, "evt-1", None)
 
         assert "event: checkpoints\n" in result
 
     def test_create_sse_event_custom(self):
         """Test creating custom SSE event"""
-        result = self.converter._create_sse_event(
-            "custom", {"custom": "data"}, "evt-1", None
-        )
+        result = self.converter._create_sse_event("custom", {"custom": "data"}, "evt-1", None)
 
         assert "event: custom\n" in result
 
@@ -173,9 +151,7 @@ class TestEventConverter:
 
     def test_create_sse_event_unknown_mode(self):
         """Test creating SSE event with unknown mode returns None"""
-        result = self.converter._create_sse_event(
-            "unknown_mode", {"data": "test"}, "evt-1", None
-        )
+        result = self.converter._create_sse_event("unknown_mode", {"data": "test"}, "evt-1", None)
 
         assert result is None
 
