@@ -248,7 +248,7 @@ Every push and PR triggers:
 5. **Tests** - All tests must pass
 6. **Coverage** - Coverage report generated
 
-**Matrix:** Tests run on Python 3.11 and 3.12
+**Matrix:** Tests run on Python 3.11,  3.12 & 3.13
 
 ---
 
