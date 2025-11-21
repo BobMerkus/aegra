@@ -38,8 +38,9 @@ async def test_lifespan_registers_langfuse_provider(monkeypatch):
         mock_db_manager.initialize = AsyncMock()
         mock_db_manager.close = AsyncMock()
 
-        mock_langgraph_service = MagicMock()
+        mock_langgraph_service = AsyncMock()
         mock_langgraph_service.initialize = AsyncMock()
+        mock_langgraph_service.cleanup = AsyncMock()
         mock_get_langgraph_service.return_value = mock_langgraph_service
 
         mock_event_store.start_cleanup_task = AsyncMock()
@@ -85,8 +86,9 @@ async def test_lifespan_calls_required_initialization():
         mock_db_manager.initialize = AsyncMock()
         mock_db_manager.close = AsyncMock()
 
-        mock_langgraph_service = MagicMock()
+        mock_langgraph_service = AsyncMock()
         mock_langgraph_service.initialize = AsyncMock()
+        mock_langgraph_service.cleanup = AsyncMock()
         mock_get_langgraph_service.return_value = mock_langgraph_service
 
         mock_event_store.start_cleanup_task = AsyncMock()
