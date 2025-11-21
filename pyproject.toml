@@ -35,7 +35,7 @@ dependencies = [
     "langgraph>=1.0.3",
     "langchain>=1.0.7",
     "langgraph-checkpoint-postgres>=3.0.1",
-    "psycopg[binary]>=3.2.12",
+    "psycopg[binary,pool]>=3.2.12",
     "pydantic>=2.12.4",
     "pyjwt>=2.10.1",
     "python-dotenv>=1.2.1",
@@ -145,4 +145,70 @@ dev = [
     "pytest-cov>=6.2.1",
     "pre-commit>=4.0.0",
     "bandit[toml]>=1.8.0",
+]
+
+# Note: Integrations < 1.0 are disabled for now
+# Langchain integrations - Chat Model Providers (https://docs.langchain.com/oss/python/integrations/chat
+# Core/Most Popular Providers
+anthropic = [
+    "langchain-anthropic>=1.0.0",
+]
+openai = [
+    "langchain-openai>=1.0.0",
+]
+google-vertexai = [
+    "langchain-google-vertexai>=2.0.0",
+]
+google-genai = [
+    "langchain-google-genai>=2.0.0",
+]
+aws = [
+    "langchain-aws>=1.0.0",
+]
+# Cloud Providers
+groq = [
+    "langchain-groq>=1.0.0",
+]
+mistralai = [
+    "langchain-mistralai>=1.0.0",
+]
+# cohere = [
+#     "langchain-cohere>=0.3.0",  # Pre-1.0
+# ]
+# together = [
+#     "langchain-together>=0.3.0",  # Pre-1.0
+# ]
+# fireworks = [
+#     "langchain-fireworks>=0.3.0",  # Pre-1.0
+# ]
+# perplexity = [
+#     "langchain-perplexity>=0.1.0",  # Pre-1.0
+# ]
+# Local/Self-Hosted Providers
+ollama = [
+    "langchain-ollama>=1.0.0",
+]
+huggingface = [
+    "langchain-huggingface>=1.0.0",
+]
+# Enterprise Providers
+# ibm = [
+#     "langchain-ibm>=0.3.0",  # Pre-1.0
+# ]
+# databricks = [
+#     "langchain-databricks>=0.2.0",  # Pre-1.0
+# ]
+# nvidia = [
+#     "langchain-nvidia-ai-endpoints>=0.3.0",  # Pre-1.0
+# ]
+# Emerging Providers
+# xai = [
+#     "langchain-xai>=0.2.0",  # Pre-1.0
+# ]
+# Additional Tools & Features
+mcp = [
+    "langchain-mcp-adapters>=0.1.12",
+]
+langmem = [
+    "langmem>=0.0.30",
 ]

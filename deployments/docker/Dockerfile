@@ -26,7 +26,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-    uv sync --locked --no-install-project --no-editable
+    uv sync --locked --no-install-project --no-editable --all-groups --no-group dev
 
 # Copy the project into the intermediate image
 COPY pyproject.toml ./
@@ -42,7 +42,7 @@ COPY graphs/ ./graphs/
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
-    uv sync --locked --no-editable
+    uv sync --locked --no-editable --all-groups --no-group dev
 
 # -----------------------------
 # Final, minimal runtime image
