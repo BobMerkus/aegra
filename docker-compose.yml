@@ -45,6 +45,12 @@ services:
         echo 'Starting Aegra server...' &&
         uvicorn src.agent_server.main:app --host 0.0.0.0 --port $${PORT:-8000} --reload
       "
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:${PORT:-8000}/health || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
 
   # Redis (optional - for advanced queuing in future phases)
   redis:
