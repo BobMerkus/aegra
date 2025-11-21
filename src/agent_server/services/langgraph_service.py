@@ -1,6 +1,7 @@
 """LangGraph integration service with official patterns"""
 
 import importlib.util
+import inspect
 import json
 import os
 from pathlib import Path
@@ -27,6 +28,7 @@ class LangGraphService:
         self.config: dict[str, Any] | None = None
         self._graph_registry: dict[str, Any] = {}
         self._graph_cache: dict[str, Any] = {}
+        self._graph_contexts: dict[str, Any] = {}  # Track async context managers for cleanup
 
     async def initialize(self):
         """Load configuration file and setup graph registry.
@@ -177,7 +179,14 @@ class LangGraphService:
         return compiled_graph
 
     async def _load_graph_from_file(self, graph_id: str, graph_info: dict[str, str]):
-        """Load graph from filesystem"""
+        """Load graph from filesystem, supporting async context managers.
+
+        Supported export patterns:
+        1. Direct graph: `graph = builder.compile()`
+        2. Uncompiled StateGraph: `graph = StateGraph(...)`
+        3. Async function: `async def graph(): return builder.compile()`
+        4. Async context manager: `@asynccontextmanager async def graph(): yield builder.compile()`
+        """
         file_path = Path(graph_info["file_path"])
         if not file_path.exists():
             raise ValueError(f"Graph file not found: {file_path}")
@@ -195,22 +204,84 @@ class LangGraphService:
         if not hasattr(module, export_name):
             raise ValueError(f"Graph export not found: {export_name} in {file_path}")
 
-        graph = getattr(module, export_name)
+        graph_export = getattr(module, export_name)
 
-        # The graph should already be compiled in the module
-        # If it needs our checkpointer/store, we'll handle that during execution
-        return graph
+        # Handle different export patterns
+        # Pattern 3: Async function that returns a graph (but not a context manager)
+        if inspect.iscoroutinefunction(graph_export):
+            logger.info(f"Loading graph '{graph_id}' from async function")
+            graph = await graph_export()
+            return graph
+
+        # Pattern 4: Check if it's a callable that might create an async context manager
+        # We check if it's callable and takes no required arguments (or all args have defaults)
+        # Then we tentatively call it to see if it returns a context manager
+        if callable(graph_export) and not isinstance(graph_export, (StateGraph, type)):
+            try:
+                # Check if it can be called with no arguments
+                sig = inspect.signature(graph_export)
+                # If all parameters have defaults or are *args/**kwargs, we can call it with no args
+                can_call_no_args = all(
+                    p.default != inspect.Parameter.empty
+                    or p.kind in (inspect.Parameter.VAR_POSITIONAL, inspect.Parameter.VAR_KEYWORD)
+                    for p in sig.parameters.values()
+                    if p.kind != inspect.Parameter.VAR_KEYWORD
+                )
+
+                if can_call_no_args:
+                    # Try calling it to see what we get
+                    result = graph_export()
+
+                    # Check if it's an async context manager
+                    if hasattr(result, "__aenter__") and hasattr(result, "__aexit__"):
+                        logger.info(f"Loading graph '{graph_id}' from async context manager factory")
+                        # Enter the context manager and store it for cleanup
+                        graph = await result.__aenter__()
+                        self._graph_contexts[graph_id] = result
+                        return graph
+                    # If it's a coroutine, await it
+                    elif inspect.iscoroutine(result):
+                        logger.info(f"Loading graph '{graph_id}' from async callable")
+                        graph = await result
+                        return graph
+                    # Otherwise just return the result
+                    else:
+                        return result
+            except (ValueError, TypeError):
+                # Signature inspection or call failed, fall through to direct return
+                pass
+
+        # Pattern 1 & 2: Direct graph or uncompiled StateGraph
+        return graph_export
 
     def list_graphs(self) -> dict[str, str]:
         """List all available graphs"""
         return {graph_id: info["file_path"] for graph_id, info in self._graph_registry.items()}
 
-    def invalidate_cache(self, graph_id: str = None):
+    async def invalidate_cache(self, graph_id: str = None):
         """Invalidate graph cache for hot-reload"""
         if graph_id:
             self._graph_cache.pop(graph_id, None)
+            # Clean up async context if exists
+            if graph_id in self._graph_contexts:
+                ctx = self._graph_contexts.pop(graph_id)
+                try:
+                    await ctx.__aexit__(None, None, None)
+                except Exception as e:
+                    logger.warning(f"Error closing context for graph '{graph_id}': {e}")
         else:
             self._graph_cache.clear()
+            # Clean up all async contexts
+            for graph_id, ctx in list(self._graph_contexts.items()):
+                try:
+                    await ctx.__aexit__(None, None, None)
+                except Exception as e:
+                    logger.warning(f"Error closing context for graph '{graph_id}': {e}")
+            self._graph_contexts.clear()
+
+    async def cleanup(self):
+        """Clean up all graph contexts on shutdown"""
+        await self.invalidate_cache()
 
     def get_config(self) -> dict[str, Any] | None:
         """Get loaded configuration"""

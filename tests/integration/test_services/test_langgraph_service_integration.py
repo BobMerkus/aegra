@@ -373,7 +373,7 @@ class TestLangGraphServiceConcurrency:
         import asyncio
 
         async def invalidate_graph(graph_id):
-            service.invalidate_cache(graph_id)
+            await service.invalidate_cache(graph_id)
             return len(service._graph_cache)
 
         # Invalidate different graphs concurrently

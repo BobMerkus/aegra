@@ -129,10 +129,7 @@ class EventConverter:
             SSE-formatted event string or None
         """
         # Prefix event type with namespace if subgraphs enabled
-        if self.subgraphs and namespace:
-            event_type = f"{stream_mode}|{'|'.join(namespace)}"
-        else:
-            event_type = stream_mode
+        event_type = f"{stream_mode}|{'|'.join(namespace)}" if self.subgraphs and namespace else stream_mode
 
         # Handle updates events - convert interrupt updates to values
         # Note: This path should rarely be reached as updates are filtered

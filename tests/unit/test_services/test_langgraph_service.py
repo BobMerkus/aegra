@@ -275,8 +275,16 @@ class TestLangGraphServiceGraphs:
         """Test successful graph loading from file"""
         service = LangGraphService()
 
+        # Create a simple non-callable object to simulate a direct graph export
+        class FakeGraph:
+            def compile(self):
+                pass
+
+            def copy(self, update=None):
+                pass
+
         mock_module = Mock()
-        mock_graph = Mock()
+        mock_graph = FakeGraph()
         mock_module.test_graph = mock_graph
 
         with (
@@ -368,42 +376,46 @@ class TestLangGraphServiceGraphs:
 class TestLangGraphServiceCache:
     """Test cache management"""
 
-    def test_invalidate_cache_specific_graph(self):
+    @pytest.mark.asyncio
+    async def test_invalidate_cache_specific_graph(self):
         """Test invalidating cache for specific graph"""
         service = LangGraphService()
         service._graph_cache = {"graph1": Mock(), "graph2": Mock()}
 
-        service.invalidate_cache("graph1")
+        await service.invalidate_cache("graph1")
 
         assert "graph1" not in service._graph_cache
         assert "graph2" in service._graph_cache
 
-    def test_invalidate_cache_specific_graph_not_found(self):
+    @pytest.mark.asyncio
+    async def test_invalidate_cache_specific_graph_not_found(self):
         """Test invalidating cache for non-existent graph"""
         service = LangGraphService()
         service._graph_cache = {"graph1": Mock()}
 
         # Should not raise error
-        service.invalidate_cache("missing_graph")
+        await service.invalidate_cache("missing_graph")
 
         assert "graph1" in service._graph_cache
 
-    def test_invalidate_cache_all(self):
+    @pytest.mark.asyncio
+    async def test_invalidate_cache_all(self):
         """Test invalidating entire cache"""
         service = LangGraphService()
         service._graph_cache = {"graph1": Mock(), "graph2": Mock()}
 
-        service.invalidate_cache()
+        await service.invalidate_cache()
 
         assert service._graph_cache == {}
 
-    def test_invalidate_cache_empty(self):
+    @pytest.mark.asyncio
+    async def test_invalidate_cache_empty(self):
         """Test invalidating empty cache"""
         service = LangGraphService()
         service._graph_cache = {}
 
         # Should not raise error
-        service.invalidate_cache()
+        await service.invalidate_cache()
 
         assert service._graph_cache == {}
 
@@ -728,3 +740,109 @@ async def test_get_graph_precompiled_copy(monkeypatch):
 
     compiled = await service.get_graph("g2")
     assert compiled == "copied:cp2:store2"
+
+
+@pytest.mark.asyncio
+async def test_load_graph_async_function(monkeypatch):
+    """Test loading graph from async function"""
+    service = LangGraphService()
+
+    # Create a mock async function that returns a graph
+    async def mock_graph_func():
+        return Mock(spec=["compile"])
+
+    # Create a mock module with the async function
+    mock_module = Mock()
+    mock_module.graph = mock_graph_func
+
+    with (
+        patch("importlib.util.spec_from_file_location") as mock_spec,
+        patch("importlib.util.module_from_spec", return_value=mock_module),
+        patch("pathlib.Path.exists", return_value=True),
+        patch("pathlib.Path.resolve", return_value=Path("/absolute/test.py")),
+    ):
+        mock_spec.return_value = Mock()
+        mock_spec.return_value.loader = Mock()
+
+        graph_info = {"file_path": "test.py", "export_name": "graph"}
+        result = await service._load_graph_from_file("test_graph", graph_info)
+
+        assert result is not None
+
+
+@pytest.mark.asyncio
+async def test_load_graph_async_context_manager(monkeypatch):
+    """Test loading graph from async context manager"""
+    from contextlib import asynccontextmanager
+
+    service = LangGraphService()
+
+    # Create a mock async context manager
+    @asynccontextmanager
+    async def mock_graph_ctx():
+        graph = Mock(spec=["compile"])
+        yield graph
+
+    # Create a mock module with the async context manager
+    mock_module = Mock()
+    mock_module.graph = mock_graph_ctx
+
+    with (
+        patch("importlib.util.spec_from_file_location") as mock_spec,
+        patch("importlib.util.module_from_spec", return_value=mock_module),
+        patch("pathlib.Path.exists", return_value=True),
+        patch("pathlib.Path.resolve", return_value=Path("/absolute/test.py")),
+    ):
+        mock_spec.return_value = Mock()
+        mock_spec.return_value.loader = Mock()
+
+        graph_info = {"file_path": "test.py", "export_name": "graph"}
+        result = await service._load_graph_from_file("test_graph", graph_info)
+
+        assert result is not None
+        # Verify context was stored for cleanup
+        assert "test_graph" in service._graph_contexts
+
+
+@pytest.mark.asyncio
+async def test_invalidate_cache_with_context(monkeypatch):
+    """Test cache invalidation cleans up async contexts"""
+    service = LangGraphService()
+
+    # Create a mock context manager
+    mock_ctx = AsyncMock()
+    mock_ctx.__aexit__ = AsyncMock()
+
+    service._graph_cache["test_graph"] = Mock()
+    service._graph_contexts["test_graph"] = mock_ctx
+
+    await service.invalidate_cache("test_graph")
+
+    # Verify cache was cleared
+    assert "test_graph" not in service._graph_cache
+    # Verify context was cleaned up
+    assert "test_graph" not in service._graph_contexts
+    mock_ctx.__aexit__.assert_called_once_with(None, None, None)
+
+
+@pytest.mark.asyncio
+async def test_cleanup_all_contexts(monkeypatch):
+    """Test cleanup method closes all async contexts"""
+    service = LangGraphService()
+
+    # Create mock contexts
+    mock_ctx1 = AsyncMock()
+    mock_ctx1.__aexit__ = AsyncMock()
+    mock_ctx2 = AsyncMock()
+    mock_ctx2.__aexit__ = AsyncMock()
+
+    service._graph_cache = {"g1": Mock(), "g2": Mock()}
+    service._graph_contexts = {"g1": mock_ctx1, "g2": mock_ctx2}
+
+    await service.cleanup()
+
+    # Verify all contexts were cleaned up
+    assert len(service._graph_contexts) == 0
+    assert len(service._graph_cache) == 0
+    mock_ctx1.__aexit__.assert_called_once()
+    mock_ctx2.__aexit__.assert_called_once()
