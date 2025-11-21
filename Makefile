@@ -48,10 +48,10 @@ security:
 	uv run bandit -c pyproject.toml -r src/
 
 test:
-	uv run pytest
+	uv run pytest -n auto
 
 test-cov:
-	uv run pytest --cov=src --cov-report=html --cov-report=term
+	uv run pytest -n auto --cov=src --cov-report=html --cov-report=term
 
 ci-check: format lint type-check security test
 	@echo ""
