@@ -3,7 +3,7 @@
 from datetime import datetime
 from typing import Any
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from ..utils.status_compat import validate_thread_status
 
@@ -21,6 +21,8 @@ class Thread(BaseModel):
     Status values: idle, busy, interrupted, error
     """
 
+    model_config = ConfigDict(from_attributes=True)
+
     thread_id: str
     status: str = "idle"  # Valid values: idle, busy, interrupted, error
     metadata: dict[str, Any] = Field(default_factory=dict)
@@ -34,9 +36,6 @@ class Thread(BaseModel):
         if not isinstance(v, str):
             raise ValueError(f"Status must be a string, got {type(v)}")
         return validate_thread_status(v)
-
-    class Config:
-        from_attributes = True
 
 
 class ThreadList(BaseModel):

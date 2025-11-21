@@ -5,6 +5,7 @@ from typing import Any, Self
 
 from pydantic import (
     BaseModel,
+    ConfigDict,
     Field,
     field_validator,
     model_validator,
@@ -80,6 +81,7 @@ class Run(BaseModel):
     Status values: pending, running, error, success, timeout, interrupted
     """
 
+    model_config = ConfigDict(from_attributes=True)
     run_id: str
     thread_id: str
     assistant_id: str
@@ -100,9 +102,6 @@ class Run(BaseModel):
         if not isinstance(v, str):
             raise ValueError(f"Status must be a string, got {type(v)}")
         return validate_run_status(v)
-
-    class Config:
-        from_attributes = True
 
 
 class RunStatus(BaseModel):
