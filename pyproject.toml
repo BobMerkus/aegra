@@ -16,6 +16,7 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
@@ -63,6 +64,7 @@ packages = ["src/agent_server"]
 [tool.ruff]
 line-length = 120
 target-version = "py313"
+exclude = ["tests", "alembic", ".venv"]
 
 [tool.ruff.lint]
 select = [
@@ -75,14 +77,12 @@ select = [
     "UP",    # pyupgrade
     "ARG",   # flake8-unused-arguments
     "SIM",   # flake8-simplify
-    "TCH",   # flake8-type-checking
     "PTH",   # flake8-use-pathlib
 ]
 ignore = [
     "E501",  # line too long (handled by formatter)
     "B008",  # do not perform function calls in argument defaults (FastAPI Depends)
     "UP007", # use X | Y for type annotations (keep Optional for clarity)
-    "UP038", # use X | Y in isinstance (causes issues in some contexts)
     "TC002", # type-checking imports cause issues with SQLAlchemy, Pydantic, etc.
     "TC003", # type-checking imports cause issues with SQLAlchemy, Pydantic, etc.
 ]
@@ -94,7 +94,7 @@ skip-magic-trailing-comma = false
 line-ending = "auto"
 
 [tool.mypy]
-python_version = "3.11"
+python_version = "3.13"
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
