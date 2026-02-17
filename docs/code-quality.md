@@ -93,7 +93,7 @@ git commit -m "feat: add feature"
 ┌────────────────────────────┐
 │ 1. Ruff Format             │ ← Formats code
 │ 2. Ruff Lint               │ ← Checks quality
-│ 3. ty Type Check           │ ← Validates types
+│ 3. ty Type Check (CI only) │ ← Validates types
 │ 4. Bandit Security         │ ← Scans for issues
 │ 5. File Checks             │ ← Validates files
 │ 6. Commit Message Check    │ ← Validates format

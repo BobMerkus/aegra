@@ -49,7 +49,7 @@ jobs:
         run: uv sync --all-packages
 
       - name: Type check with ty
-        run: uvx ty check libs/aegra-api/src/
+        run: uv run ty check libs/aegra-api/src/ libs/aegra-cli/src/
         continue-on-error: true
 
       - name: Security check with bandit
