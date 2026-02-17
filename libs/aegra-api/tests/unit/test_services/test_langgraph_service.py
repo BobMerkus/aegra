@@ -393,11 +393,12 @@ class TestLangGraphServiceGraphs:
             patch("pathlib.Path.resolve", return_value=Path("/absolute/test.py")),
         ):
             graph_info = {"file_path": "test.py", "export_name": "graph"}
-            await service._load_graph_from_file("test_dc", graph_info)
+            try:
+                await service._load_graph_from_file("test_dc", graph_info)
+            finally:
+                sys.modules.pop("graphs.test_dc", None)
 
         assert recorded_modules["present"] is True
-        # Cleanup
-        sys.modules.pop("graphs.test_dc", None)
 
     @pytest.mark.asyncio
     async def test_load_graph_from_file_cleans_sys_modules_on_exec_error(self) -> None:
@@ -448,11 +449,11 @@ class TestLangGraphServiceGraphs:
         service = LangGraphService()
 
         graph_info = {"file_path": str(graph_file), "export_name": "graph"}
-        result = await service._load_graph_from_file("dc_graph", graph_info)
-
-        assert result.name == "test"  # type: ignore[attr-defined]
-        # Cleanup
-        sys.modules.pop("graphs.dc_graph", None)
+        try:
+            result = await service._load_graph_from_file("dc_graph", graph_info)
+            assert result.name == "test"  # type: ignore[attr-defined]
+        finally:
+            sys.modules.pop("graphs.dc_graph", None)
 
     def test_list_graphs(self):
         """Test listing available graphs"""
