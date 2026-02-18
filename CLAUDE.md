@@ -10,7 +10,7 @@ This file provides context for AI coding agents working with this repository.
 - Drop-in replacement for LangGraph Platform using the same LangGraph SDK
 - Self-hosted on your own PostgreSQL database
 - Agent Protocol compliant (works with Agent Chat UI, LangGraph Studio, CopilotKit)
-- Python 3.11+ with FastAPI and PostgreSQL
+- Python 3.12+ with FastAPI and PostgreSQL
 
 ## Quick Start Commands
 
@@ -30,7 +30,7 @@ uv run ruff check .
 uv run ruff format .
 
 # Type checking
-uv run mypy libs/aegra-api/src/ libs/aegra-cli/src/
+uv run ty check libs/aegra-api/src/ libs/aegra-cli/src/
 
 # All CI checks at once
 make ci-check
