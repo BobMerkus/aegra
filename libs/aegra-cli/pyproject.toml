@@ -24,7 +24,7 @@ dependencies = [
     "python-dotenv>=1.1.1",
 
     # Server (always included)
-    "aegra-api~=0.6.0",
+    "aegra-api~=0.7.0",
 ]
 
 [project.scripts]
