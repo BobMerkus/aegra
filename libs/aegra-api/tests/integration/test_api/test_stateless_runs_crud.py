@@ -9,7 +9,7 @@ from unittest.mock import AsyncMock, patch
 from tests.fixtures.clients import create_test_app, make_client
 from tests.fixtures.database import DummySessionBase
 from tests.fixtures.session_fixtures import BasicSession, override_session_dependency
-from tests.fixtures.test_helpers import DummyRun
+from tests.fixtures.test_helpers import DummyRun, make_assistant
 
 # ---------------------------------------------------------------------------
 # ORM mock helpers (matching test_runs_crud.py patterns)
@@ -21,8 +21,6 @@ def _assistant_row(
     graph_id: str = "test-graph",
     user_id: str = "test-user",
 ) -> object:
-    from tests.fixtures.test_helpers import make_assistant
-
     assistant = make_assistant(assistant_id=assistant_id, graph_id=graph_id, user_id=user_id)
     assistant.graph_id = graph_id
     return assistant

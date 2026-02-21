@@ -1,5 +1,7 @@
 """Unit tests for stateless (thread-free) run endpoints."""
 
+import asyncio
+from collections.abc import AsyncIterator
 from datetime import UTC, datetime
 from unittest.mock import AsyncMock, MagicMock, patch
 from uuid import uuid4
@@ -136,8 +138,6 @@ class TestCleanupAfterBackgroundRun:
             task_awaited = True
 
         # Create a real asyncio.Task so `await task` works
-        import asyncio
-
         task = asyncio.create_task(_fake_task())
         await task  # let it finish before test to avoid timing issues
 
@@ -255,7 +255,7 @@ class TestStatelessStreamRun:
         """Delegates to create_and_stream_run and wraps iterator for cleanup."""
         request = RunCreate(assistant_id="agent", input={"msg": "hi"})
 
-        async def _fake_body() -> AsyncMock:
+        async def _fake_body() -> AsyncIterator[str]:
             yield "event: data\n\n"
 
         mock_response = StreamingResponse(
@@ -295,7 +295,7 @@ class TestStatelessStreamRun:
         """Returns original response unchanged when on_completion='keep'."""
         request = RunCreate(assistant_id="agent", input={"msg": "hi"}, on_completion="keep")
 
-        async def _fake_body() -> AsyncMock:
+        async def _fake_body() -> AsyncIterator[str]:
             yield "event: data\n\n"
 
         mock_response = StreamingResponse(

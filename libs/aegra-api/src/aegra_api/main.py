@@ -232,7 +232,8 @@ def _include_core_routers(app: FastAPI) -> None:
     2. Assistants (with auth)
     3. Threads (with auth)
     4. Runs (with auth)
-    5. Store (with auth)
+    5. Stateless Runs (with auth)
+    6. Store (with auth)
 
     Args:
         app: FastAPI application instance

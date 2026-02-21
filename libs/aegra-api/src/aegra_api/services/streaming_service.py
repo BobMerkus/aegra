@@ -338,7 +338,7 @@ class StreamingService:
             logger.error(f"Error cancelling run {run_id}: {e}")
             return False
 
-    async def _update_run_status(self, run_id: str, status: str, output: Any = None, error: str = None):
+    async def _update_run_status(self, run_id: str, status: str, output: Any = None, error: str | None = None) -> None:
         """Update run status in database using the shared updater."""
         try:
             # Lazy import to avoid cycles
