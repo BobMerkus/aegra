@@ -120,7 +120,7 @@ Configure CORS for your custom routes in `aegra.json`:
 }
 ```
 
-The default is `allow_origins: ["*"]` with `allow_credentials: true`.
+The default is `allow_origins: ["*"]` with `allow_credentials: true`. Note that browsers reject `allow_origins: ["*"]` when credentials are enabled, so you should specify concrete origins in production when using `allow_credentials: true`.
 
 ## Configuration reference
 

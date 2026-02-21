@@ -70,7 +70,7 @@ The `@auth.authenticate` decorator registers your authentication function. It re
 | `permissions` | `list[str]` | `[]` | Permission strings |
 | `is_authenticated` | `bool` | `True` | Authentication status |
 
-Any additional fields you return are preserved and accessible in your routes via the `User` model.
+Any additional fields you return (like `role`, `team_id`, etc.) are preserved and accessible via `ctx.user` in authorization handlers and via the `User` model in custom routes.
 
 ### Denying access
 
@@ -163,10 +163,15 @@ The `ctx` parameter provides:
 <Tabs>
   <Tab title="JWT">
     ```python
+    import os
     from langgraph_sdk import Auth
     import jwt
 
     auth = Auth()
+
+    JWT_SECRET = os.environ.get("JWT_SECRET")
+    if not JWT_SECRET:
+        raise RuntimeError("JWT_SECRET environment variable is required")
 
     @auth.authenticate
     async def authenticate(headers: dict) -> dict:
@@ -174,7 +179,7 @@ The `ctx` parameter provides:
         if not token:
             raise Exception("Missing Authorization header")
 
-        payload = jwt.decode(token, "your-secret-key", algorithms=["HS256"])
+        payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
         return {
             "identity": payload["sub"],
             "display_name": payload.get("name", ""),

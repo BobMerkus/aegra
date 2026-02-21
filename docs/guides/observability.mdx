@@ -96,17 +96,14 @@ Aegra uses a pure OpenTelemetry approach:
 
 This keeps overhead low and maintains compatibility with the entire OpenTelemetry ecosystem.
 
-## Environment variables reference
+## Key environment variables
+
+The main variables you'll need:
 
 | Variable | Description |
 |----------|-------------|
-| `OTEL_SERVICE_NAME` | Service name for traces (default: `aegra-backend`) |
 | `OTEL_TARGETS` | Comma-separated list of backends: `LANGFUSE`, `PHOENIX`, `GENERIC` |
+| `OTEL_SERVICE_NAME` | Service name for traces (default: `aegra-backend`) |
 | `OTEL_CONSOLE_EXPORT` | Log traces to console (`true`/`false`) |
-| `LANGFUSE_BASE_URL` | Langfuse API endpoint |
-| `LANGFUSE_PUBLIC_KEY` | Langfuse public key |
-| `LANGFUSE_SECRET_KEY` | Langfuse secret key |
-| `PHOENIX_COLLECTOR_ENDPOINT` | Phoenix OTLP endpoint |
-| `PHOENIX_API_KEY` | Phoenix API key (optional) |
-| `OTEL_EXPORTER_OTLP_ENDPOINT` | Generic OTLP collector endpoint |
-| `OTEL_EXPORTER_OTLP_HEADERS` | Headers for generic OTLP (comma-separated `key=value`) |
+
+Each provider has its own set of variables (endpoints, API keys). See the [environment variables reference](/reference/environment-variables) for the full list including all Langfuse, Phoenix, and generic OTLP variables.

@@ -53,6 +53,8 @@ Documents missing specified fields are still stored but won't have embeddings fo
 
 ### Supported embedding providers
 
+The format is `provider:model-id`. The provider is determined by splitting on the first colon, so `bedrock:amazon.titan-embed-text-v2:0` is parsed as provider `bedrock` with model `amazon.titan-embed-text-v2:0`.
+
 | Provider | Model | Dimensions | Config value |
 |----------|-------|------------|--------------|
 | OpenAI | text-embedding-3-small | 1536 | `openai:text-embedding-3-small` |
