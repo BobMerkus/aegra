@@ -31,23 +31,49 @@
         "tab": "Guides",
         "groups": [
           {
-            "group": "Guides",
+            "group": "Core concepts",
+            "pages": [
+              "guides/assistants",
+              "guides/threads-and-state",
+              "guides/streaming",
+              "guides/human-in-the-loop"
+            ]
+          },
+          {
+            "group": "Data & storage",
+            "pages": [
+              "guides/store",
+              "guides/semantic-store",
+              "guides/subgraphs"
+            ]
+          },
+          {
+            "group": "Configuration",
             "pages": [
               "guides/authentication",
               "guides/custom-routes",
-              "guides/observability",
-              "guides/semantic-store",
               "guides/dependencies",
+              "guides/observability",
               "guides/deployment"
             ]
           }
         ]
       },
       {
-        "tab": "Reference",
+        "tab": "API Reference",
         "groups": [
           {
-            "group": "Reference",
+            "group": "Endpoints",
+            "pages": [
+              "reference/api-assistants",
+              "reference/api-threads",
+              "reference/api-runs",
+              "reference/api-store",
+              "reference/api-health"
+            ]
+          },
+          {
+            "group": "Configuration",
             "pages": [
               "reference/configuration",
               "reference/cli",
@@ -63,7 +89,8 @@
         "pages": [
           "introduction",
           "quickstart",
-          "installation"
+          "installation",
+          "getting-started"
         ]
       }
     ]
