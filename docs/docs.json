@@ -82,9 +82,12 @@
         "group": "Getting started",
         "pages": [
           "introduction",
+          "why-aegra",
           "quickstart",
           "installation",
-          "getting-started"
+          "getting-started",
+          "migration",
+          "feature-support"
         ]
       }
     ]
