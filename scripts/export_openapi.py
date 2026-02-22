@@ -11,13 +11,14 @@ imports below are intentionally placed after os.environ calls.
 import json
 import logging
 import os
+from importlib.metadata import version
 from pathlib import Path
 
 # Suppress all logging before imports — env vars must be set first
 logging.disable(logging.CRITICAL)
 os.environ["AEGRA__APP__LOG_LEVEL"] = "CRITICAL"
 os.environ.setdefault("AEGRA__APP__PROJECT_NAME", "Aegra")
-os.environ.setdefault("AEGRA__APP__VERSION", "0.5.0")
+os.environ.setdefault("AEGRA__APP__VERSION", version("aegra-api"))
 os.environ.setdefault("AEGRA__APP__DEBUG", "false")
 os.environ.setdefault("DATABASE_URL", "postgresql+asyncpg://user:pass@localhost/db")
 
@@ -54,5 +55,5 @@ for path in paths_to_remove:
 schema["tags"] = [t for t in schema.get("tags", []) if t["name"] in CORE_TAGS]
 
 output_path = Path(__file__).parent.parent / "docs" / "openapi.json"
-output_path.write_text(json.dumps(schema, indent=2) + "\n")
+output_path.write_text(json.dumps(schema, indent=2) + "\n", encoding="utf-8")
 print(f"Exported {len(schema['paths'])} endpoints to {output_path}")
