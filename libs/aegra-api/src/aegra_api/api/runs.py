@@ -24,7 +24,7 @@ from aegra_api.core.orm import _get_session_maker, get_session
 from aegra_api.core.serializers import GeneralSerializer
 from aegra_api.core.sse import create_end_event, get_sse_headers
 from aegra_api.models import Run, RunCreate, RunStatus, User
-from aegra_api.models.errors import CONFLICT, NOT_FOUND
+from aegra_api.models.errors import CONFLICT, NOT_FOUND, SSE_RESPONSE
 from aegra_api.services.broker import broker_manager
 from aegra_api.services.graph_streaming import stream_graph_events
 from aegra_api.services.langgraph_service import create_run_config, get_langgraph_service
@@ -35,7 +35,7 @@ from aegra_api.utils.run_utils import (
 )
 from aegra_api.utils.status_compat import validate_run_status
 
-router = APIRouter(tags=["Runs"], dependencies=auth_dependency)
+router = APIRouter(tags=["Thread Runs"], dependencies=auth_dependency)
 
 logger = structlog.getLogger(__name__)
 serializer = GeneralSerializer()
@@ -150,7 +150,7 @@ async def _validate_resume_command(session: AsyncSession, thread_id: str, comman
             raise HTTPException(400, "Cannot resume: thread is not in interrupted state")
 
 
-@router.post("/threads/{thread_id}/runs", response_model=Run, responses={**NOT_FOUND})
+@router.post("/threads/{thread_id}/runs", response_model=Run, responses={**NOT_FOUND, **CONFLICT})
 async def create_run(
     thread_id: str,
     request: RunCreate,
@@ -281,7 +281,7 @@ async def create_run(
     return run
 
 
-@router.post("/threads/{thread_id}/runs/stream", responses={**NOT_FOUND})
+@router.post("/threads/{thread_id}/runs/stream", responses={**SSE_RESPONSE, **NOT_FOUND, **CONFLICT})
 async def create_and_stream_run(
     thread_id: str,
     request: RunCreate,
@@ -599,7 +599,7 @@ async def join_run(
     return output
 
 
-@router.post("/threads/{thread_id}/runs/wait", responses={**NOT_FOUND})
+@router.post("/threads/{thread_id}/runs/wait", responses={**NOT_FOUND, **CONFLICT})
 async def wait_for_run(
     thread_id: str,
     request: RunCreate,
@@ -747,7 +747,7 @@ async def wait_for_run(
 
 
 # TODO: check if this method is actually required because the implementation doesn't seem correct.
-@router.get("/threads/{thread_id}/runs/{run_id}/stream", responses={**NOT_FOUND})
+@router.get("/threads/{thread_id}/runs/{run_id}/stream", responses={**SSE_RESPONSE, **NOT_FOUND})
 async def stream_run(
     thread_id: str,
     run_id: str,

@@ -74,6 +74,14 @@
             ]
           },
           {
+            "group": "Contributing",
+            "icon": "code-pull-request",
+            "pages": [
+              "guides/contributing",
+              "guides/postgres-migration"
+            ]
+          },
+          {
             "group": "Reference",
             "icon": "file-lines",
             "pages": [

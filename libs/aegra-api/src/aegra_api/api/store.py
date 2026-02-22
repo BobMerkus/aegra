@@ -1,6 +1,7 @@
 """Store endpoints for Agent Protocol"""
 
 from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi.responses import Response
 
 from aegra_api.core.auth_deps import auth_dependency, get_current_user
 from aegra_api.core.auth_handlers import build_auth_context, handle_event
@@ -16,13 +17,13 @@ from aegra_api.models import (
     StoreSearchResponse,
     User,
 )
-from aegra_api.models.errors import NOT_FOUND
+from aegra_api.models.errors import BAD_REQUEST
 
 router = APIRouter(tags=["Store"], dependencies=auth_dependency)
 
 
-@router.put("/store/items")
-async def put_store_item(request: StorePutRequest, user: User = Depends(get_current_user)) -> dict[str, str]:
+@router.put("/store/items", status_code=204)
+async def put_store_item(request: StorePutRequest, user: User = Depends(get_current_user)) -> Response:
     """Create or update an item in the store.
 
     If an item with the same namespace and key already exists, its value is
@@ -49,10 +50,10 @@ async def put_store_item(request: StorePutRequest, user: User = Depends(get_curr
 
     await store.aput(namespace=tuple(scoped_namespace), key=request.key, value=request.value)
 
-    return {"status": "stored"}
+    return Response(status_code=204)
 
 
-@router.get("/store/items", response_model=StoreGetResponse, responses={**NOT_FOUND})
+@router.get("/store/items", response_model=StoreGetResponse, responses={**BAD_REQUEST})
 async def get_store_item(
     key: str = Query(..., description="Key of the item to retrieve."),
     namespace: str | list[str] | None = Query(
@@ -62,7 +63,7 @@ async def get_store_item(
 ) -> StoreGetResponse:
     """Get an item from the store by key.
 
-    Returns 404 if no item exists at the given namespace and key.
+    Returns 400 if no item exists at the given namespace and key.
     """
     # Authorization check
     ctx = build_auth_context(user, "store", "get")
@@ -93,18 +94,18 @@ async def get_store_item(
     item = await store.aget(tuple(scoped_namespace), key)
 
     if not item:
-        raise HTTPException(404, "Item not found")
+        raise HTTPException(400, "Item not found")
 
     return StoreGetResponse(key=key, value=item.value, namespace=list(scoped_namespace))
 
 
-@router.delete("/store/items")
+@router.delete("/store/items", status_code=204)
 async def delete_store_item(
     body: StoreDeleteRequest | None = None,
     key: str | None = Query(None, description="Key of the item to delete (query param alternative)."),
     namespace: list[str] | None = Query(None, description="Namespace path (query param alternative)."),
     user: User = Depends(get_current_user),
-) -> dict[str, str]:
+) -> Response:
     """Delete an item from the store.
 
     Accepts parameters via JSON body (`namespace` + `key`) or query
@@ -141,7 +142,7 @@ async def delete_store_item(
 
     await store.adelete(tuple(scoped_namespace), k)
 
-    return {"status": "deleted"}
+    return Response(status_code=204)
 
 
 @router.post("/store/items/search", response_model=StoreSearchResponse)

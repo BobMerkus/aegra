@@ -27,6 +27,14 @@ UNAVAILABLE: dict[int, dict[str, object]] = {
     503: {"model": AgentProtocolError, "description": "Service unavailable"},
 }
 
+# SSE streaming response for OpenAPI documentation
+SSE_RESPONSE: dict[int, dict[str, object]] = {
+    200: {
+        "description": "Server-Sent Events stream",
+        "content": {"text/event-stream": {"schema": {"type": "string"}}},
+    },
+}
+
 
 def get_error_type(status_code: int) -> str:
     """Map HTTP status codes to error types"""

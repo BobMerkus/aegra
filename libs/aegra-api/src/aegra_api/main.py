@@ -37,12 +37,12 @@ from aegra_api.utils.setup_logging import setup_logging
 # Task management for run cancellation
 active_runs: dict[str, asyncio.Task] = {}
 
-# OpenAPI tag metadata shown in /docs and exported spec
 OPENAPI_TAGS: list[dict[str, str]] = [
-    {"name": "Assistants", "description": "Create and manage configured instances of your graphs."},
-    {"name": "Threads", "description": "Manage conversations, state, and checkpoints."},
-    {"name": "Runs", "description": "Execute agents and stream results."},
-    {"name": "Store", "description": "Persistent key-value and semantic storage."},
+    {"name": "Assistants", "description": "A configured instance of a graph."},
+    {"name": "Threads", "description": "Accumulated state and outputs from a group of runs."},
+    {"name": "Thread Runs", "description": "Invoke a graph on a thread, updating its persistent state."},
+    {"name": "Stateless Runs", "description": "Invoke a graph without state or memory persistence."},
+    {"name": "Store", "description": "Persistent key-value and semantic storage available from any thread."},
     {"name": "Health", "description": "Server health checks and service information."},
 ]
 

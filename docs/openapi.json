@@ -1559,7 +1559,7 @@
     "/threads/{thread_id}/runs": {
       "post": {
         "tags": [
-          "Runs"
+          "Thread Runs"
         ],
         "summary": "Create Run",
         "description": "Create and execute a new run.\n\nStarts graph execution asynchronously and returns the run record\nimmediately with status `pending`. Poll the run or use the stream\nendpoint to follow progress. Provide either `input` or `command` (for\nhuman-in-the-loop resumption) but not both.",
@@ -1606,6 +1606,16 @@
               }
             }
           },
+          "409": {
+            "description": "Resource state conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentProtocolError"
+                }
+              }
+            }
+          },
           "422": {
             "description": "Validation Error",
             "content": {
@@ -1620,7 +1630,7 @@
       },
       "get": {
         "tags": [
-          "Runs"
+          "Thread Runs"
         ],
         "summary": "List Runs",
         "description": "List runs for a thread.\n\nReturns runs ordered by creation time (newest first). Use `status` to\nfilter and `limit`/`offset` to paginate.",
@@ -1711,7 +1721,7 @@
     "/threads/{thread_id}/runs/stream": {
       "post": {
         "tags": [
-          "Runs"
+          "Thread Runs"
         ],
         "summary": "Create And Stream Run",
         "description": "Create a new run and stream its execution via SSE.\n\nReturns a `text/event-stream` response with Server-Sent Events. Each\nevent has a `type` field (e.g. `values`, `updates`, `messages`,\n`metadata`, `end`) and a JSON `data` payload.\n\nSet `on_disconnect` to `\"continue\"` if the run should keep executing\nafter the client disconnects (default is `\"cancel\"`). Use `stream_mode`\nto control which event types are emitted.",
@@ -1739,15 +1749,30 @@
         },
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "Server-Sent Events stream",
             "content": {
               "application/json": {
                 "schema": {}
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string"
+                }
               }
             }
           },
           "404": {
             "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentProtocolError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Resource state conflict",
             "content": {
               "application/json": {
                 "schema": {
@@ -1772,7 +1797,7 @@
     "/threads/{thread_id}/runs/{run_id}": {
       "get": {
         "tags": [
-          "Runs"
+          "Thread Runs"
         ],
         "summary": "Get Run",
         "description": "Get a run by its ID.\n\nReturns the current state of the run including its status, input, output,\nand error information.",
@@ -1832,7 +1857,7 @@
       },
       "patch": {
         "tags": [
-          "Runs"
+          "Thread Runs"
         ],
         "summary": "Update Run",
         "description": "Update a run's status.\n\nPrimarily used to interrupt a running execution. Set `status` to\n`\"interrupted\"` to cooperatively stop the run.",
@@ -1902,7 +1927,7 @@
       },
       "delete": {
         "tags": [
-          "Runs"
+          "Thread Runs"
         ],
         "summary": "Delete Run",
         "description": "Delete a run record.\n\nIf the run is active (pending or running) and `force=0`, returns 409\nConflict. Set `force=1` to cancel the run first (best-effort) and then\ndelete it. Returns 204 No Content on success.",
@@ -1981,7 +2006,7 @@
     "/threads/{thread_id}/runs/{run_id}/join": {
       "get": {
         "tags": [
-          "Runs"
+          "Thread Runs"
         ],
         "summary": "Join Run",
         "description": "Wait for a run to complete and return its output.\n\nIf the run is already in a terminal state (success, error, interrupted),\nthe output is returned immediately. Otherwise the server waits up to 30\nseconds for the background task to finish.",
@@ -2045,7 +2070,7 @@
     "/threads/{thread_id}/runs/wait": {
       "post": {
         "tags": [
-          "Runs"
+          "Thread Runs"
         ],
         "summary": "Wait For Run",
         "description": "Create a run, execute it, and wait for completion.\n\nCombines run creation and execution with synchronous waiting. Returns the\nfinal output directly (not the Run object). The server waits up to 5\nminutes for the run to finish. If the run times out, the current output\n(which may be empty) is returned.",
@@ -2094,6 +2119,16 @@
               }
             }
           },
+          "409": {
+            "description": "Resource state conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentProtocolError"
+                }
+              }
+            }
+          },
           "422": {
             "description": "Validation Error",
             "content": {
@@ -2110,7 +2145,7 @@
     "/threads/{thread_id}/runs/{run_id}/stream": {
       "get": {
         "tags": [
-          "Runs"
+          "Thread Runs"
         ],
         "summary": "Stream Run",
         "description": "Stream an existing run's execution via SSE.\n\nAttach to a run that was created without streaming (e.g. via the create\nendpoint) to receive its events in real time. If the run has already\nfinished, a single `end` event is emitted. Use the `Last-Event-ID`\nheader to resume from a specific event after a disconnect.",
@@ -2171,10 +2206,15 @@
         ],
         "responses": {
           "200": {
-            "description": "Successful Response",
+            "description": "Server-Sent Events stream",
             "content": {
               "application/json": {
                 "schema": {}
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string"
+                }
               }
             }
           },
@@ -2204,7 +2244,7 @@
     "/threads/{thread_id}/runs/{run_id}/cancel": {
       "post": {
         "tags": [
-          "Runs"
+          "Thread Runs"
         ],
         "summary": "Cancel Run Endpoint",
         "description": "Cancel or interrupt a running execution.\n\nUse `action=cancel` to hard-cancel the run immediately, or\n`action=interrupt` to cooperatively interrupt (the graph can handle the\ninterrupt and save partial state). Set `wait=1` to block until the\nbackground task has fully settled before returning the updated run.",
@@ -2290,6 +2330,197 @@
         }
       }
     },
+    "/runs/wait": {
+      "post": {
+        "tags": [
+          "Stateless Runs"
+        ],
+        "summary": "Stateless Wait For Run",
+        "description": "Create a stateless run and wait for completion.\n\nGenerates an ephemeral thread, delegates to the threaded ``wait_for_run``\nendpoint, and deletes the thread on completion (unless\n``on_completion=\"keep\"``).",
+        "operationId": "stateless_wait_for_run_runs_wait_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RunCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Stateless Wait For Run Runs Wait Post"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentProtocolError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Resource state conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentProtocolError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/runs/stream": {
+      "post": {
+        "tags": [
+          "Stateless Runs"
+        ],
+        "summary": "Stateless Stream Run",
+        "description": "Create a stateless run and stream its execution.\n\nGenerates an ephemeral thread, delegates to the threaded\n``create_and_stream_run`` endpoint, and deletes the thread after the\nstream finishes (unless ``on_completion=\"keep\"``).",
+        "operationId": "stateless_stream_run_runs_stream_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RunCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Server-Sent Events stream",
+            "content": {
+              "application/json": {
+                "schema": {}
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentProtocolError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Resource state conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentProtocolError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/runs": {
+      "post": {
+        "tags": [
+          "Stateless Runs"
+        ],
+        "summary": "Stateless Create Run",
+        "description": "Create a stateless background run.\n\nGenerates an ephemeral thread, delegates to the threaded ``create_run``\nendpoint, and schedules cleanup as a background task (unless\n``on_completion=\"keep\"``).",
+        "operationId": "stateless_create_run_runs_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RunCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Run"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentProtocolError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Resource state conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentProtocolError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/store/items": {
       "put": {
         "tags": [
@@ -2309,19 +2540,8 @@
           }
         },
         "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "additionalProperties": {
-                    "type": "string"
-                  },
-                  "title": "Response Put Store Item Store Items Put"
-                }
-              }
-            }
+          "204": {
+            "description": "Successful Response"
           },
           "422": {
             "description": "Validation Error",
@@ -2340,7 +2560,7 @@
           "Store"
         ],
         "summary": "Get Store Item",
-        "description": "Get an item from the store by key.\n\nReturns 404 if no item exists at the given namespace and key.",
+        "description": "Get an item from the store by key.\n\nReturns 400 if no item exists at the given namespace and key.",
         "operationId": "get_store_item_store_items_get",
         "parameters": [
           {
@@ -2390,8 +2610,8 @@
               }
             }
           },
-          "404": {
-            "description": "Resource not found",
+          "400": {
+            "description": "Invalid request",
             "content": {
               "application/json": {
                 "schema": {
@@ -2478,19 +2698,8 @@
           }
         },
         "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "additionalProperties": {
-                    "type": "string"
-                  },
-                  "title": "Response Delete Store Item Store Items Delete"
-                }
-              }
-            }
+          "204": {
+            "description": "Successful Response"
           },
           "422": {
             "description": "Validation Error",
@@ -4405,19 +4614,23 @@
   "tags": [
     {
       "name": "Assistants",
-      "description": "Create and manage configured instances of your graphs."
+      "description": "A configured instance of a graph."
     },
     {
       "name": "Threads",
-      "description": "Manage conversations, state, and checkpoints."
+      "description": "Accumulated state and outputs from a group of runs."
     },
     {
-      "name": "Runs",
-      "description": "Execute agents and stream results."
+      "name": "Thread Runs",
+      "description": "Invoke a graph on a thread, updating its persistent state."
+    },
+    {
+      "name": "Stateless Runs",
+      "description": "Invoke a graph without state or memory persistence."
     },
     {
       "name": "Store",
-      "description": "Persistent key-value and semantic storage."
+      "description": "Persistent key-value and semantic storage available from any thread."
     },
     {
       "name": "Health",

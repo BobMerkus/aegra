@@ -39,7 +39,7 @@ schema["info"]["version"] = settings.app.VERSION
 schema["info"]["description"] = "Production-ready Agent Protocol server"
 
 # Remove custom-route endpoints and untagged paths (root, custom routes)
-CORE_TAGS = {"Assistants", "Threads", "Runs", "Store", "Health"}
+CORE_TAGS = {"Assistants", "Threads", "Thread Runs", "Stateless Runs", "Store", "Health"}
 paths_to_remove: list[str] = []
 for path, methods in schema.get("paths", {}).items():
     for _method, info in methods.items():

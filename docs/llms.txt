@@ -28,6 +28,8 @@ Aegra is a production-ready server for running LangGraph agents with full persis
 - [Dependencies](guides/dependencies.mdx): Shared Python modules across graphs.
 - [Observability](guides/observability.mdx): OpenTelemetry tracing with Langfuse, Phoenix, and OTLP.
 - [Deployment](guides/deployment.mdx): Docker, PaaS, and Kubernetes deployment.
+- [Contributing](guides/contributing.mdx): Setup guide, code standards, and development workflow for contributors.
+- [PostgreSQL 18 migration](guides/postgres-migration.mdx): Migrate local PostgreSQL data from version 15 to 18.
 
 ## Reference
 
