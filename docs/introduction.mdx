@@ -8,46 +8,56 @@ Aegra is an open-source, self-hosted Agent Protocol server that lets you run AI 
 ## Before you begin
 
 <Tip>
-  **Using an AI coding tool?** Add the Aegra docs MCP server for better results when building with Aegra.
+  **Using an AI coding tool?** Copy the prompt below to add the Aegra [skill](https://mintlify.com/docs/ai/skills) and [MCP server](https://mintlify.com/docs/ai/model-context-protocol) for better results when building with Aegra.
 </Tip>
 
-<Tabs>
-  <Tab title="Claude Code">
-    ```bash
-    claude mcp add --transport http aegra-docs https://docs.aegra.dev/mcp
-    ```
-  </Tab>
-  <Tab title="Cursor">
-    Add to your `.cursor/mcp.json`:
+<Expandable title="Install the Aegra skill and MCP server">
+  Install the Aegra skill to get context on project structure, configuration, and best practices:
 
-    ```json
-    {
-      "mcpServers": {
-        "aegra-docs": {
-          "url": "https://docs.aegra.dev/mcp"
+  ```bash
+  npx skills add https://docs.aegra.dev
+  ```
+
+  Then add the Aegra MCP server for access to documentation search. Follow the setup instructions for your tool:
+
+  <Tabs>
+    <Tab title="Claude Code">
+      ```bash
+      claude mcp add --transport http aegra-docs https://docs.aegra.dev/mcp
+      ```
+    </Tab>
+    <Tab title="Cursor">
+      Add to your `.cursor/mcp.json`:
+
+      ```json
+      {
+        "mcpServers": {
+          "aegra-docs": {
+            "url": "https://docs.aegra.dev/mcp"
+          }
         }
       }
-    }
-    ```
-  </Tab>
-  <Tab title="VS Code">
-    Add to your `.vscode/mcp.json`:
+      ```
+    </Tab>
+    <Tab title="VS Code">
+      Add to your `.vscode/mcp.json`:
 
-    ```json
-    {
-      "servers": {
-        "aegra-docs": {
-          "type": "http",
-          "url": "https://docs.aegra.dev/mcp"
+      ```json
+      {
+        "servers": {
+          "aegra-docs": {
+            "type": "http",
+            "url": "https://docs.aegra.dev/mcp"
+          }
         }
       }
-    }
-    ```
-  </Tab>
-  <Tab title="llms.txt">
-    Feed `https://docs.aegra.dev/llms.txt` to any LLM for full docs context.
-  </Tab>
-</Tabs>
+      ```
+    </Tab>
+    <Tab title="llms.txt">
+      Feed `https://docs.aegra.dev/llms.txt` to any LLM for full docs context.
+    </Tab>
+  </Tabs>
+</Expandable>
 
 ## What Aegra does
 
