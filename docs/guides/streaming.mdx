@@ -37,9 +37,44 @@ Control what data you receive by setting `stream_mode` on the run. You can pass 
 | Mode | What it streams |
 |------|----------------|
 | `values` | Full state snapshot after each node execution |
-| `messages-tuple` | Message objects as they're generated (tokens, tool calls) |
-| `events` | Low-level LangGraph events for debugging |
-| `debug` | Detailed debug events with checkpoint info |
+| `updates` | Only the state changes (delta) produced by each node |
+| `messages` | LLM tokens and tool calls as `(message, metadata)` tuples with accumulation into `messages/partial` and `messages/complete` events |
+| `messages-tuple` | Raw message tuples without accumulation (JavaScript graph compatibility) |
+| `custom` | User-defined data emitted from inside nodes via `get_stream_writer()` |
+| `events` | Low-level LangGraph `astream_events` for fine-grained tracing |
+| `debug` | Checkpoint and task result events (auto-enabled on all streams) |
+
+<Note>
+  `debug` mode is automatically added to every stream — you don't need to request it explicitly. `updates` mode is also added internally to detect interrupt events for human-in-the-loop support.
+</Note>
+
+### Custom streaming
+
+Send custom data from inside graph nodes using `get_stream_writer()`:
+
+```python
+from langgraph.config import get_stream_writer
+
+
+def my_node(state):
+    writer = get_stream_writer()
+    writer({"progress": "Fetching data..."})
+    # ... do work ...
+    writer({"progress": "Processing results..."})
+    return {"result": "done"}
+```
+
+Receive custom events by including `custom` in the stream modes:
+
+```python
+async for chunk in client.runs.stream(
+    thread_id=thread_id,
+    assistant_id="agent",
+    input={"messages": [{"type": "human", "content": "Analyze this"}]},
+    stream_mode=["custom", "values"],
+):
+    print(f"Event: {chunk.event}, Data: {chunk.data}")
+```
 
 ### Using multiple modes
 
@@ -63,11 +98,13 @@ During streaming, you'll receive these event types:
 |-------|-------------|
 | `metadata` | Run metadata (run_id, attempt number) — sent first |
 | `values` | Full state snapshot (when using `values` mode) |
+| `updates` | State delta from a single node (when using `updates` mode) |
 | `messages/partial` | Partial message chunk (streaming token) |
 | `messages/complete` | Complete message after all tokens received |
 | `messages/metadata` | Message metadata (run_id) |
+| `custom` | User-defined data from `get_stream_writer()` |
 | `events` | LangGraph internal events (when using `events` mode) |
-| `debug` | Debug checkpoint events |
+| `debug` | Debug checkpoint and task result events |
 | `error` | Error during execution |
 | `end` | Stream complete |
 
