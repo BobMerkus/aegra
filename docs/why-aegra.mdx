@@ -30,12 +30,16 @@ These are reasonable trade-offs for prototyping. They become problems at product
 
 | | LangSmith Deployments | Aegra |
 |:--|:--|:--|
-| **Seat cost** | $39/seat/month | $0 |
+| **Free tier** | 1 seat, 50 runs/mo | Unlimited |
+| **Paid seats** | $39/seat/month (Plus) | $0 |
 | **Run cost** | $0.005/run | $0 |
-| **Node execution** | $0.001/node + $0.0036/min | $0 |
-| **Traces** | Included (LangSmith only) | Your choice (OTLP fan-out) |
-| **Infrastructure** | Managed | Your Postgres + compute |
-| **Data residency** | Provider-controlled | Your infrastructure |
+| **Uptime cost** | $0.0007–$0.0036/min | $0 |
+| **Traces** | LangSmith (5k–10k/mo included, then $2.50/1k) | Any OTLP backend, no limits |
+| **Self-hosted option** | Enterprise tier only (custom pricing) | Always self-hosted (Apache 2.0) |
+| **Infrastructure** | Managed cloud | Your Postgres + compute |
+| **Data residency** | LangChain cloud (Enterprise: your VPC) | Your infrastructure |
+
+*Based on [LangChain pricing](https://www.langchain.com/pricing) as of February 2026.*
 
 Aegra's infrastructure cost is whatever you pay for PostgreSQL and compute. A single \$5/month VPS can run the server, database, and multiple agents.
 

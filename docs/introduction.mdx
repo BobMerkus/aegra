@@ -3,7 +3,7 @@ title: "Introduction"
 description: "Self-hosted Agent Protocol server. Your infrastructure, your rules."
 ---
 
-Aegra is an open-source, self-hosted Agent Protocol server that lets you run AI agents on your own infrastructure. It's a drop-in replacement for LangGraph Platform — same SDK, same APIs, no vendor lock-in. Read [why teams choose Aegra](/why-aegra) over managed platforms, or jump straight to the [migration guide](/migration) if you're switching from LangSmith Deployments.
+Aegra is an open-source, self-hosted Agent Protocol server that lets you run AI agents on your own infrastructure. It's a drop-in replacement for LangSmith Deployments — same SDK, same APIs, no vendor lock-in. Read [why teams choose Aegra](/why-aegra) over managed platforms, or jump straight to the [migration guide](/migration) if you're switching.
 
 ## Before you begin
 
@@ -71,7 +71,7 @@ Aegra gives you a production-ready server for running LangGraph agents with full
     Run on your own infrastructure with your own PostgreSQL database. No external dependencies.
   </Card>
   <Card title="Same SDK" icon="plug">
-    Use the LangGraph SDK you already know. Switch from LangGraph Platform with zero code changes.
+    Use the LangGraph SDK you already know. Switch from LangSmith Deployments with zero code changes.
   </Card>
   <Card title="Open source" icon="code">
     Apache 2.0 licensed. Inspect, modify, and contribute to the codebase.
@@ -80,17 +80,18 @@ Aegra gives you a production-ready server for running LangGraph agents with full
 
 ## How it compares
 
-| Feature | LangGraph Platform | Aegra |
+| Feature | LangSmith Deployments | Aegra |
 |:--|:--|:--|
-| **Cost** | Paid per month | Free (self-hosted) |
-| **Data control** | Third-party hosted | Your infrastructure |
-| **Vendor lock-in** | High dependency | Zero lock-in |
-| **Authentication** | Limited options | Custom (JWT/OAuth/Firebase) |
+| **Free tier** | 1 seat, 50 runs/mo, community support | Unlimited (self-hosted) |
+| **Paid tier** | From $39/seat/mo + $0.005/run | None — self-host for free |
+| **Enterprise / self-host** | Custom pricing, contact sales | Apache 2.0, always self-hosted |
+| **Data residency** | LangChain cloud (or Enterprise VPC) | Your infrastructure |
+| **Authentication** | Dashboard-configured | Custom handlers (JWT/OAuth/Firebase) |
 | **Database** | Managed, no BYO | Bring your own Postgres |
-| **Tracing** | LangSmith only | Your choice (Langfuse, Phoenix, any OTLP) |
+| **Tracing** | LangSmith | Any OTLP backend (Langfuse, Phoenix, etc.) |
 | **SDK** | LangGraph SDK | Same LangGraph SDK |
 
-*Comparison accurate as of February 2026. See the full [feature support matrix](/feature-support) for details on what's supported today.*
+*Comparison accurate as of February 2026 based on [LangChain pricing](https://www.langchain.com/pricing). See the full [feature support matrix](/feature-support) for what Aegra supports today.*
 
 ## Key features
 
