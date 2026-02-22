@@ -5,7 +5,7 @@ description: "Get a running Aegra server in under 5 minutes."
 
 ## Prerequisites
 
-- Python 3.11+
+- Python 3.12+
 - Docker (for PostgreSQL)
 
 ## Create a project
@@ -94,16 +94,16 @@ Aegra implements the [Agent Protocol](https://github.com/langchain-ai/agent-prot
 ## What's next
 
 <CardGroup cols={2}>
+  <Card title="Build your first agent" icon="rocket" href="/getting-started">
+    Hands-on tutorial: build, deploy, and interact with an agent step by step.
+  </Card>
+  <Card title="Streaming" icon="signal-stream" href="/guides/streaming">
+    Understand stream modes, SSE events, and reconnection.
+  </Card>
   <Card title="Authentication" icon="lock" href="/guides/authentication">
     Add JWT, OAuth, or Firebase auth to your server.
   </Card>
-  <Card title="Configuration" icon="gear" href="/reference/configuration">
-    Full reference for aegra.json settings.
-  </Card>
   <Card title="Deployment" icon="cloud" href="/guides/deployment">
     Deploy to Docker, PaaS, or Kubernetes.
-  </Card>
-  <Card title="Observability" icon="chart-line" href="/guides/observability">
-    Set up tracing with Langfuse, Phoenix, or any OTLP backend.
   </Card>
 </CardGroup>
