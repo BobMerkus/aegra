@@ -28,10 +28,11 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "Getting started",
+        "tab": "Documentation",
         "groups": [
           {
             "group": "Getting started",
+            "icon": "rocket",
             "pages": [
               "introduction",
               "why-aegra",
@@ -41,14 +42,10 @@
               "migration",
               "feature-support"
             ]
-          }
-        ]
-      },
-      {
-        "tab": "Guides",
-        "groups": [
+          },
           {
             "group": "Core concepts",
+            "icon": "book",
             "pages": [
               "guides/assistants",
               "guides/threads-and-state",
@@ -58,6 +55,7 @@
           },
           {
             "group": "Data & storage",
+            "icon": "database",
             "pages": [
               "guides/store",
               "guides/semantic-store",
@@ -66,6 +64,7 @@
           },
           {
             "group": "Configuration",
+            "icon": "gear",
             "pages": [
               "guides/authentication",
               "guides/custom-routes",
