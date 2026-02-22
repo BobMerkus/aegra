@@ -3,7 +3,7 @@
   "info": {
     "title": "Aegra",
     "description": "Production-ready Agent Protocol server",
-    "version": "0.1.0"
+    "version": "0.7.2"
   },
   "paths": {
     "/info": {
@@ -3348,6 +3348,22 @@
             ],
             "title": "On Disconnect",
             "description": "Behavior on client disconnect: 'cancel' (default) or 'continue'."
+          },
+          "on_completion": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "delete",
+                  "keep"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "On Completion",
+            "description": "Behavior after stateless run completes: 'delete' (default) removes the ephemeral thread, 'keep' preserves it."
           },
           "multitask_strategy": {
             "anyOf": [
