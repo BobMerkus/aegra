@@ -102,16 +102,25 @@ class TestStatelessWaitForRun:
 
     def test_assistant_not_found(self) -> None:
         """Non-existent assistant → 404."""
+        from unittest.mock import MagicMock
+
         app = create_test_app(include_runs=True, include_threads=False)
 
         class Session(DummySessionBase):
             async def scalar(self, _stmt: object) -> None:
                 return None
 
+        session_instance = Session()
+        ctx = MagicMock()
+        ctx.__aenter__ = AsyncMock(return_value=session_instance)
+        ctx.__aexit__ = AsyncMock(return_value=False)
+        mock_maker = MagicMock(return_value=ctx)
+
         override_session_dependency(app, Session)
         client = make_client(app)
 
         with (
+            patch("aegra_api.api.runs._get_session_maker", return_value=mock_maker),
             patch("aegra_api.api.runs.get_langgraph_service") as mock_service,
             patch("aegra_api.api.stateless_runs._delete_thread_by_id", new_callable=AsyncMock),
         ):
@@ -125,18 +134,28 @@ class TestStatelessWaitForRun:
 
     def test_on_completion_keep_accepted(self) -> None:
         """on_completion='keep' is accepted without validation error."""
+        from unittest.mock import MagicMock
+
         app = create_test_app(include_runs=True, include_threads=False)
+
+        session_instance = BasicSession()
+        ctx = MagicMock()
+        ctx.__aenter__ = AsyncMock(return_value=session_instance)
+        ctx.__aexit__ = AsyncMock(return_value=False)
+        mock_maker = MagicMock(return_value=ctx)
+
         override_session_dependency(app, BasicSession)
         client = make_client(app)
 
-        resp = client.post(
-            "/runs/wait",
-            json={
-                "assistant_id": "asst-123",
-                "input": {"msg": "hi"},
-                "on_completion": "keep",
-            },
-        )
+        with patch("aegra_api.api.runs._get_session_maker", return_value=mock_maker):
+            resp = client.post(
+                "/runs/wait",
+                json={
+                    "assistant_id": "asst-123",
+                    "input": {"msg": "hi"},
+                    "on_completion": "keep",
+                },
+            )
         # Should NOT be a validation error; may fail later (404 for assistant, etc.)
         assert resp.status_code != 422
 
@@ -188,10 +207,19 @@ class TestStatelessWaitForRun:
 
                 return Result()
 
+        from unittest.mock import MagicMock
+
+        session_instance = Session()
+        ctx = MagicMock()
+        ctx.__aenter__ = AsyncMock(return_value=session_instance)
+        ctx.__aexit__ = AsyncMock(return_value=False)
+        mock_maker = MagicMock(return_value=ctx)
+
         override_session_dependency(app, Session)
         client = make_client(app)
 
         with (
+            patch("aegra_api.api.runs._get_session_maker", return_value=mock_maker),
             patch("aegra_api.api.runs.get_langgraph_service") as mock_service,
             patch("aegra_api.api.runs.execute_run_async"),
             patch("asyncio.wait_for", new_callable=AsyncMock),

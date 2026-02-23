@@ -296,10 +296,10 @@ class TestStatelessWaitForRun:
                 new_callable=AsyncMock,
             ) as mock_delete,
         ):
-            result = await stateless_wait_for_run(request, mock_user, mock_session)
+            result = await stateless_wait_for_run(request, mock_user)
 
         assert result == expected_output
-        mock_wait.assert_called_once_with("eph-thread-1", request, mock_user, mock_session)
+        mock_wait.assert_called_once_with("eph-thread-1", request, mock_user)
         mock_delete.assert_called_once_with("eph-thread-1", mock_user.identity)
 
     @pytest.mark.asyncio
@@ -319,7 +319,7 @@ class TestStatelessWaitForRun:
                 new_callable=AsyncMock,
             ) as mock_delete,
         ):
-            await stateless_wait_for_run(request, mock_user, mock_session)
+            await stateless_wait_for_run(request, mock_user)
 
         mock_delete.assert_not_called()
 
@@ -341,7 +341,7 @@ class TestStatelessWaitForRun:
             ) as mock_delete,
             pytest.raises(RuntimeError, match="boom"),
         ):
-            await stateless_wait_for_run(request, mock_user, mock_session)
+            await stateless_wait_for_run(request, mock_user)
 
         mock_delete.assert_called_once_with("eph-thread-3", mock_user.identity)
 
@@ -364,7 +364,7 @@ class TestStatelessWaitForRun:
             ),
             pytest.raises(RuntimeError, match="original"),
         ):
-            await stateless_wait_for_run(request, mock_user, mock_session)
+            await stateless_wait_for_run(request, mock_user)
 
 
 class TestStatelessStreamRun:

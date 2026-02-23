@@ -111,7 +111,6 @@ async def _cleanup_after_background_run(run_id: str, thread_id: str, user_id: st
 async def stateless_wait_for_run(
     request: RunCreate,
     user: User = Depends(get_current_user),
-    session: AsyncSession = Depends(get_session),
 ) -> dict[str, Any]:
     """Create a stateless run and wait for completion.
 
@@ -123,7 +122,7 @@ async def stateless_wait_for_run(
     should_delete = request.on_completion != "keep"
 
     try:
-        result = await wait_for_run(thread_id, request, user, session)
+        result = await wait_for_run(thread_id, request, user)
         return result
     finally:
         if should_delete:
