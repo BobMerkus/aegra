@@ -580,11 +580,12 @@ async def join_run(
         if run_orm.status in terminal_states:
             return getattr(run_orm, "output", None) or {}
 
-    # No pool connection held during the wait
+    # No pool connection held during the wait.
+    # asyncio.shield prevents wait_for from cancelling the background task on timeout.
     task = active_runs.get(run_id)
     if task:
         try:
-            await asyncio.wait_for(task, timeout=30.0)
+            await asyncio.wait_for(asyncio.shield(task), timeout=30.0)
         except TimeoutError:
             pass
         except asyncio.CancelledError:
@@ -592,7 +593,13 @@ async def join_run(
 
     # Short-lived session: read final output
     async with maker() as session:
-        run_orm = await session.scalar(select(RunORM).where(RunORM.run_id == run_id))
+        run_orm = await session.scalar(
+            select(RunORM).where(
+                RunORM.run_id == run_id,
+                RunORM.thread_id == thread_id,
+                RunORM.user_id == user.identity,
+            )
+        )
         if not run_orm:
             raise HTTPException(404, f"Run '{run_id}' not found")
         return run_orm.output or {}
@@ -717,13 +724,13 @@ async def wait_for_run(
 
     # Wait for task to complete with timeout
     try:
-        await asyncio.wait_for(task, timeout=300.0)  # 5 minute timeout
+        await asyncio.wait_for(asyncio.shield(task), timeout=300.0)  # 5 minute timeout
     except TimeoutError:
         logger.warning(f"[wait_for_run] timeout waiting for run_id={run_id}")
     except asyncio.CancelledError:
         logger.info(f"[wait_for_run] cancelled run_id={run_id}")
-    except Exception as e:
-        logger.error(f"[wait_for_run] exception in run_id={run_id}: {e}")
+    except Exception:
+        logger.exception(f"[wait_for_run] unexpected exception in run_id={run_id}")
 
     # Session block 2: read final output
     async with maker() as session:

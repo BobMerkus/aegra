@@ -360,6 +360,7 @@ class TestRunsEndpoints:
         with (
             patch("aegra_api.api.runs._get_session_maker", return_value=mock_maker),
             patch("aegra_api.api.runs.active_runs", {"run-1": mock_task}),
+            patch("aegra_api.api.runs.asyncio.shield", side_effect=lambda t: t),
             patch("aegra_api.api.runs.asyncio.wait_for", new_callable=AsyncMock) as mock_wait,
         ):
             result = await join_run("thread-1", "run-1", mock_user)
