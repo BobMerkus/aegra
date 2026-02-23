@@ -4,14 +4,14 @@ import asyncio
 import contextlib
 from collections.abc import AsyncIterator
 from datetime import UTC, datetime
-from typing import Any
+from typing import Any, cast
 from uuid import uuid4
 
 import structlog
 from fastapi import APIRouter, Depends, Header, HTTPException, Query
 from fastapi.responses import StreamingResponse
 from langgraph.types import Command, Send
-from sqlalchemy import delete, select, update
+from sqlalchemy import CursorResult, delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from aegra_api.core.auth_ctx import with_auth_ctx
@@ -77,10 +77,13 @@ async def set_thread_status(session: AsyncSession, thread_id: str, status: str) 
     from aegra_api.utils.status_compat import validate_thread_status
 
     validated_status = validate_thread_status(status)
-    result = await session.execute(
-        update(ThreadORM)
-        .where(ThreadORM.thread_id == thread_id)
-        .values(status=validated_status, updated_at=datetime.now(UTC))
+    result = cast(
+        CursorResult,
+        await session.execute(
+            update(ThreadORM)
+            .where(ThreadORM.thread_id == thread_id)
+            .values(status=validated_status, updated_at=datetime.now(UTC))
+        ),
     )
     await session.commit()
 
@@ -196,8 +199,8 @@ async def create_run(
     available_graphs = langgraph_service.list_graphs()
     resolved_assistant_id = resolve_assistant_id(requested_id, available_graphs)
 
-    config = request.config
-    context = request.context
+    config = request.config or {}
+    context = request.context or {}
     configurable = config.get("configurable", {})
 
     if config.get("configurable") and context:
@@ -317,8 +320,8 @@ async def create_and_stream_run(
 
     resolved_assistant_id = resolve_assistant_id(requested_id, available_graphs)
 
-    config = request.config
-    context = request.context
+    config = request.config or {}
+    context = request.context or {}
     configurable = config.get("configurable", {})
 
     if config.get("configurable") and context:
@@ -639,8 +642,8 @@ async def wait_for_run(
         available_graphs = langgraph_service.list_graphs()
         resolved_assistant_id = resolve_assistant_id(requested_id, available_graphs)
 
-        config = request.config
-        context = request.context
+        config = request.config or {}
+        context = request.context or {}
         configurable = config.get("configurable", {})
 
         if config.get("configurable") and context:
@@ -897,7 +900,7 @@ async def execute_run_async(
     user: User,
     config: dict | None = None,
     context: dict | None = None,
-    stream_mode: list[str] | None = None,
+    stream_mode: str | list[str] | None = None,
     session: AsyncSession | None = None,
     checkpoint: dict | None = None,
     command: dict[str, Any] | None = None,

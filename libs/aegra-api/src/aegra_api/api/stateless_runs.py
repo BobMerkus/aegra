@@ -7,7 +7,6 @@ explicitly sets ``on_completion="keep"``).
 """
 
 import asyncio
-import contextlib
 from collections.abc import AsyncIterator
 from typing import Any
 from uuid import uuid4
@@ -172,18 +171,21 @@ async def stateless_stream_run(
     original_iterator = response.body_iterator
 
     async def _wrapped_iterator() -> AsyncIterator[str | bytes]:
-        async with contextlib.aclosing(original_iterator) as stream:
+        try:
+            async for chunk in original_iterator:
+                yield chunk
+        finally:
+            # Close the underlying iterator if it supports aclose()
+            aclose = getattr(original_iterator, "aclose", None)
+            if aclose is not None:
+                await aclose()
             try:
-                async for chunk in stream:
-                    yield chunk
-            finally:
-                try:
-                    await _delete_thread_by_id(thread_id, user.identity)
-                except Exception:
-                    logger.exception(
-                        "Failed to delete ephemeral thread after stream",
-                        thread_id=thread_id,
-                    )
+                await _delete_thread_by_id(thread_id, user.identity)
+            except Exception:
+                logger.exception(
+                    "Failed to delete ephemeral thread after stream",
+                    thread_id=thread_id,
+                )
 
     return StreamingResponse(
         _wrapped_iterator(),
