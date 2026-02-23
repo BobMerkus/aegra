@@ -82,17 +82,18 @@ async for chunk in client.runs.stream(
 
 ## 🔥 Why Aegra?
 
-| | LangSmith Deployments | Aegra |
+*Comparing against LangSmith Deployments SaaS (Plus plan). Free tier has no deployment access. See [LangChain pricing](https://www.langchain.com/pricing) for all plans.*
+
+| | LangSmith Deployments (Plus) | Aegra |
 |:--|:--|:--|
-| **Cost** | Free tier (1 seat, 50 runs/mo); Plus from $39/seat/mo + $0.005/run; Enterprise custom | Free forever (self-hosted, Apache 2.0) |
-| **Data residency** | LangChain cloud (Enterprise: your VPC) | Your infrastructure |
-| **Authentication** | Dashboard-configured | Custom Python handlers (JWT/OAuth/Firebase) |
+| **Seats** | $39/seat/month | Free, unlimited |
+| **Deployments** | 1 free dev; additional at $0.005/run + uptime fees | Unlimited, no per-run cost |
+| **Data residency** | LangChain cloud | Your infrastructure |
+| **Auth** | Dashboard-configured | Custom Python handlers (JWT/OAuth/Firebase) |
 | **Database** | Managed, no BYO | Bring your own Postgres |
 | **Tracing** | LangSmith | Any OTLP backend (Langfuse, Phoenix, etc.) |
-| **Self-hosted option** | Enterprise only | Always |
+| **Self-hosted** | Enterprise only (custom pricing) | Always (Apache 2.0) |
 | **SDK** | LangGraph SDK | Same LangGraph SDK |
-
-*Based on [LangChain pricing](https://www.langchain.com/pricing) as of February 2026.*
 
 ## ✨ Features
 
